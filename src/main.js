@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import './plugins/vuetify'
-import App from './core/views/App.vue'
+import App from './App.vue'
 import router from './core/router'
-import store from './core/store'
+import store from './store'
 
 Vue.config.productionTip = false
 
