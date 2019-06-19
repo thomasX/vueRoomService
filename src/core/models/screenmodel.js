@@ -1,3 +1,4 @@
+
 export default class Screenmodel {
   constructor (id, translationMap) {
     this.id = id
