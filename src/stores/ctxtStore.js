@@ -1,5 +1,5 @@
-
-const state = {
+  const namespaced = true
+  const state = {
     mandCtxt: {},
     version: {}
   }
@@ -39,6 +39,7 @@ const state = {
   }
   
   export default {
+    namespaced,
     state,
     getters,
     actions,

@@ -9,18 +9,12 @@
     <router-link to="/">Go to Home</router-link>
   </p>
    <router-view></router-view>
-    <Helloworld/>
   </v-app>
 </template>
 
 <script>
-import Home from '@/modules/home/views/Home'
-
 export default {
   name: 'App',
-  components: {
-    Home
-  },
   data () {
     return {
       //
