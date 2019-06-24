@@ -19,7 +19,7 @@
               <div class="flex-content" >
                 <div class="flex-item"  v-for="(aValue,index) in Object.values(props.item)" :cheaders="Object.values(model.headers)" :key="index" >
                     <div>{{ colheader(index) }}</div>
-                    <span>{{ aValue }} </span> 
+                    <div>{{ aValue }} </div> 
                 </div>
               </div>
             </td>
