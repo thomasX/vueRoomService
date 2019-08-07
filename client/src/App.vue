@@ -1,20 +1,23 @@
 <template>
-  <v-app>
-    <p>
-    <!-- use router-link component for navigation. -->
-    <!-- specify the link by passing the `to` prop. -->
-    <!-- `<router-link>` will be rendered as an `<a>` tag by default -->
-    <router-link to="/about">Go to About</router-link>
-    ...
-    <router-link to="/">Go to Home</router-link>
-  </p>
-   <router-view></router-view>
-  </v-app>
+  <div id="app">
+    <v-app>
+      <page-header />
+      <main>
+        <v-container fluid>
+          <router-view></router-view>
+        </v-container>
+      </main>
+    </v-app>
+  </div>
 </template>
 
 <script>
+import PageHeader from '@/core/components/header.vue'
 export default {
-  name: 'App',
+  name: 'app',
+  components: {
+    PageHeader
+  },
   data () {
     return {
       //
