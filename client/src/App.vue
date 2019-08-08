@@ -1,22 +1,24 @@
 <template>
   <div id="app">
     <v-app>
-      <page-header />
+      <pageheader />
       <main>
-        <v-container fluid>
-          <router-view></router-view>
-        </v-container>
+        <v-content>
+          <v-container fluid>
+            <router-view></router-view>
+          </v-container>
+        </v-content>
       </main>
     </v-app>
   </div>
 </template>
 
 <script>
-import PageHeader from '@/core/components/header.vue'
+import pageheader from '@/core/components/pageheader.vue'
 export default {
   name: 'app',
   components: {
-    PageHeader
+    pageheader
   },
   data () {
     return {
