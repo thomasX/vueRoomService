@@ -16,9 +16,16 @@
             v-model="password"
             autocomplete="new-password"
           ></v-text-field>
+          <br>
+          <v-checkbox
+            label="Admin"
+            v-model="admin"
+          ></v-checkbox>
         </form>
         <br>
         <div class="danger-alert" v-html="error" />
+        <br>
+        <div class="success" v-html="success" />
         <br>
         <v-btn
           dark
@@ -39,23 +46,33 @@ export default {
     return {
       email: '',
       password: '',
-      error: null
+      admin: false,
+      error: null,
+      success: null
     }
   },
   methods: {
     async register () {
       try {
+        // const response = await AuthenticationService.register(
         const response = await AuthenticationService.register({
           email: this.email,
-          password: this.password
+          password: this.password,
+          admin: this.admin
         })
-        this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user)
+        // this.$store.dispatch('setToken', response.data.token)
+        // this.$store.dispatch('setUser', response.data.user)
+        this.error = null
+        this.success = JSON.stringify(response.data.email) + ' successfully registered ' 
+        this.email = '',
+        this.password = '',
+        this.admin = false,
         this.$router.push({
-          name: 'songs'
+          name: 'register'
         })
       } catch (error) {
-        this.error = error.response.data.error
+        this.success = null
+        this.error = (error.response) ? error.response.data.error : 'no response from API-Server'
       }
     }
   }
@@ -63,4 +80,10 @@ export default {
 </script>
 
 <style scoped>
+.danger-alert{
+  color: crimson
+}
+.success{
+  color: darkgreen
+}
 </style>

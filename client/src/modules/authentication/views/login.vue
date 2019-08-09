@@ -50,7 +50,7 @@ export default {
           name: 'songs'
         })
       } catch (error) {
-        this.error = error.response.data.error
+        this.error = (error.response) ? error.response.data.error : 'no response from API-Server'
       }
     }
   }
@@ -58,4 +58,7 @@ export default {
 </script>
 
 <style scoped>
+.danger-alert{
+  color: crimson
+}
 </style>

@@ -32,7 +32,7 @@
         Login
       </v-btn>
       <v-btn 
-        v-if="!$store.state.isUserLoggedIn"
+        v-if="(($store.state.isUserLoggedIn && $store.state.user.admin) || ($store.state.noActiveUsers)) "
         flat 
         dark
         :to="{
@@ -52,15 +52,21 @@
 </template>
 
 <script>
+import AuthenticationService from '@/services/AuthenticationService'
 export default {
   methods: {
     logout () {
       this.$store.dispatch('setToken', null)
       this.$store.dispatch('setUser', null)
-      this.$router.push({
-        name: 'songs'
-      })
+      this.$store.dispatch('setUser', null)
+    },
+    checkActiveUsers () {
+      const noUsers = AuthenticationService.noActiveUsers()
+      this.$store.dispatch('setNoActiveUsers',noUsers)
     }
+  },
+  async beforeMount () {
+    this.checkActiveUsers();
   }
 }
 </script>
