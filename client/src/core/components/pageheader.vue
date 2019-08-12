@@ -32,7 +32,7 @@
         Login
       </v-btn>
       <v-btn 
-        v-if="(($store.state.isUserLoggedIn && $store.state.user.admin) || ($store.state.noActiveUsers)) "
+        v-if="registerAllowed"
         flat 
         dark
         :to="{
@@ -54,18 +54,25 @@
 <script>
 import AuthenticationService from '@/services/AuthenticationService'
 export default {
+  computed: {
+    registerAllowed: function () {
+      const curUserAllowed = (this.$store.state.isUserLoggedIn && this.$store.state.user.admin)
+      const noAdminUserExists= (! this.$store.state.activeAdminUsers)
+      return (curUserAllowed || noAdminUserExists) 
+    }
+  },
   methods: {
     logout () {
       this.$store.dispatch('setToken', null)
       this.$store.dispatch('setUser', null)
     },
-    checkActiveUsers () {
-      const noUsers = AuthenticationService.noActiveUsers()
-      this.$store.dispatch('setNoActiveUsers',noUsers)
+    async checkActiveAdminUsers () {
+      const response = await AuthenticationService.activeAdminUserExists()
+      this.$store.dispatch('setActiveAdminUserExists',response.data)
     }
   },
   async beforeMount () {
-    this.checkActiveUsers();
+    await this.checkActiveAdminUsers();
   }
 }
 </script>

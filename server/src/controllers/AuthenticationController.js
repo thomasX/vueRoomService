@@ -58,11 +58,18 @@ module.exports = {
       })
     }
   },
-  async noActiveUsers (req, res) {
+  async activeAdminUserExists (req, res) {
     try {
-      const user = await User.findOne()
-      if (!user) res.send(true)
-      if (user) res.send(false)
+      const user = await User.findOne({
+        where: {
+          admin: true
+        }
+      })
+      if ((user) && (user !== null)) {
+        res.send(true)
+      } else {
+        res.send(false)
+      }
     } catch (err) {
       res.status(500).send({
         error: 'An error has occured trying to log in'

@@ -2,13 +2,13 @@ import Api from '@/services/Api'
 
 export default {
   register (user) {
-    return Api().post('register', user)
+    return Api().post('User/register', user)
   },
   login (credentials) {
-    return Api().post('login', credentials)
+    return Api().post('User/login', credentials)
   },
-  noActiveUsers () {
-    return Api().get('noActiveUsers')
+  activeAdminUserExists () {
+    return Api().get('User/activeAdminUserExists')
   }
 
 }

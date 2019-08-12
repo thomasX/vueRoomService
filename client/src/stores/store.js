@@ -13,7 +13,7 @@ export default new Vuex.Store({
     token: null,
     user: null,
     isUserLoggedIn: false,
-    noActiveUsers: false
+    activeAdminUsers: true
   },
   mutations: {
     setToken (state, token) {
@@ -23,8 +23,8 @@ export default new Vuex.Store({
     setUser (state, user) {
       state.user = user
     },
-    setNoActiveUsers(state,value){
-      state.noActiveUsers = value
+    setActiveAdminUserExists(state, value){
+      state.activeAdminUsers = value
     }
   },
   actions: {
@@ -34,8 +34,8 @@ export default new Vuex.Store({
     setUser ({commit}, user) {
       commit('setUser', user)
     },
-    setNoActiveUsers ({commit}, value) {
-      commit('setNoActiveUsers', value)
+    setActiveAdminUserExists ({commit}, value) {
+      commit('setActiveAdminUserExists', value)
     }
   }
 })

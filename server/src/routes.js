@@ -2,12 +2,12 @@ const AuthenticationController = require('./controllers/AuthenticationController
 const AuthenticationControllerPolicy = require('./polices/AuthenticationControllerPolicy')
 
 module.exports = (app) => {
-  app.post('/register',
+  app.post('/User/register',
     AuthenticationControllerPolicy.register,
     AuthenticationController.register)
 
-  app.post('/login',
+  app.post('/User/login',
     AuthenticationController.login)
 
-  app.get('/noActiveUsers', AuthenticationController.noActiveUsers)
+  app.get('/User/activeAdminUserExists', AuthenticationController.activeAdminUserExists)
 }
