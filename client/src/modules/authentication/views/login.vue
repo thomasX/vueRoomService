@@ -47,7 +47,7 @@ export default {
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
         this.$router.push({
-          name: 'songs'
+          name: 'reservations'
         })
       } catch (error) {
         this.error = (error.response) ? error.response.data.error : 'no response from API-Server'

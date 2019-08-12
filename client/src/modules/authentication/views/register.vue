@@ -63,7 +63,7 @@ export default {
         // this.$store.dispatch('setToken', response.data.token)
         // this.$store.dispatch('setUser', response.data.user)
         this.error = null
-        this.success = JSON.stringify(response.data.email) + ' successfully registered ' 
+        this.success = JSON.stringify(response.data.user.email) + ' successfully registered ' 
         this.email = '',
         this.password = '',
         this.admin = false,
