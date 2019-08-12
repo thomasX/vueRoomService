@@ -3,6 +3,8 @@ client/node_modules
 client/dist
 server/node_modules
 server/dist
+server/roomservice.sqlite
+
 
 # local env files
 client/.env.local
