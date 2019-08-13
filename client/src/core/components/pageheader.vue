@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar app name="appbar" fixed class="cyan" dark>
+  <v-app-bar app name="appbar" fixed class="cyan" dark>
     <v-toolbar-title class="mr-4">
       <router-link 
         class="home"
@@ -12,7 +12,7 @@
     </v-toolbar-title>
     <v-toolbar-items>
       <v-btn 
-        flat 
+        text 
         dark
         :to="{
           name: 'reservations'
@@ -24,7 +24,7 @@
     <v-toolbar-items>
       <v-btn 
         v-if="!$store.state.isUserLoggedIn"
-        flat 
+        text 
         dark
         :to="{
           name: 'login'
@@ -33,7 +33,7 @@
       </v-btn>
       <v-btn 
         v-if="registerAllowed"
-        flat 
+        text 
         dark
         :to="{
           name: 'register'
@@ -42,13 +42,13 @@
       </v-btn>
       <v-btn 
         v-if="$store.state.isUserLoggedIn"
-        flat 
+        text 
         dark
         @click="logout">
         Log Out
       </v-btn>
     </v-toolbar-items>
-  </v-toolbar>
+  </v-app-bar>
 </template>
 
 <script>

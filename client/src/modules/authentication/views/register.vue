@@ -18,8 +18,8 @@
           ></v-text-field>
           <br>
           <v-checkbox
-            label="Admin"
             v-model="admin"
+            label="Admin"
           ></v-checkbox>
         </form>
         <br>
