@@ -4,6 +4,7 @@ import Home from '@/modules/home/views/Home'
 import Login from '@/modules/authentication/views/login'
 import Register from '@/modules/authentication/views/register'
 import Reservations from '@/modules/reservations/views/reservations'
+import Usermaintenance from '@/modules/Usermaintenance/views/usermaintenance'
 
 Vue.use(Router)
 
@@ -37,6 +38,11 @@ export default new Router({
       path: '/reservations',
       name: 'reservations',
       component: Reservations
+    },
+    {
+      path: '/Usermaintenance',
+      name: 'Usermeintenance',
+      component: Usermaintenance
     },
     {
       path: '/menu',
