@@ -5,4 +5,6 @@ import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loade
 
 Vue.use(Vuetify)
 
-export default new Vuetify({})
+export default new Vuetify({
+    iconfont: 'mdi'
+})
