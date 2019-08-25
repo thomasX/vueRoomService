@@ -7,7 +7,10 @@ module.exports = {
       password: Joi.string().regex(
         new RegExp('^[a-zA-Z0-9]{8,32}$')
       ),
-      admin: Joi.boolean()
+      admin: Joi.boolean(),
+      language: Joi.string().regex(
+        new RegExp('^[a-z]{2,3}$')
+      )
     }
 
     const { error } = Joi.validate(req.body, schema)

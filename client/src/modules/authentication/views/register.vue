@@ -21,6 +21,11 @@
             v-model="admin"
             label="Admin"
           ></v-checkbox>
+          <v-text-field
+            label="Language"
+            type="text"
+            v-model="language"
+          ></v-text-field>
         </form>
         <br>
         <div class="danger-alert" v-html="error" />
@@ -47,6 +52,7 @@ export default {
       email: '',
       password: '',
       admin: false,
+      language: 'de',
       error: null,
       success: null
     }
@@ -58,7 +64,8 @@ export default {
         const response = await AuthenticationService.register({
           email: this.email,
           password: this.password,
-          admin: this.admin
+          admin: this.admin,
+          language: this.language
         })
         // this.$store.dispatch('setToken', response.data.token)
         // this.$store.dispatch('setUser', response.data.user)

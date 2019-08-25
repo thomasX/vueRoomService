@@ -1,5 +1,9 @@
-export default class AbstrScrollBO {
-    constructor (scrolldefinition) {
-        this.scrolldefinition = scrolldefinition
-    }
+const ScrollBObyName = {
+  UserScrollBO: require('./UserScrollBO')
+  // ...
+}
+module.exports = {
+  createInstance (name) {
+    return new ScrollBObyName[name]()
+  }
 }

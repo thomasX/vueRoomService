@@ -6,32 +6,32 @@
         <template v-if="!isMobile" v-slot:header="props">
           <thead fixed-header>
             <tr>
-              <th v-for="header in computedHeaders" :key=header.value @click="changeSort(header)" >
+              <th v-for="header in computedHeaders" :key=header.value @click="changeSort(header)">
                 <span :style="getHeaderStyle(header)"> {{ header.text }} </span>
                 <v-icon v-if="header.searchable" small :style="getHeaderStyle(header)">arrow_downward</v-icon>
               </th>
             </tr>
           </thead>
         </template>
-        <template v-slot:item="props">
+        <template v-slot:item="props" >
           <tr v-if="!isMobile" v-hammer:pan="processSwipeEvent">
-            <td :ref="calcRef(props.item.linenumber)" v-hammer:tap="(e) => processTapEvent(e, props.item)" :style="getStyle(props.item, header.value)" v-for="header in computedHeaders" :key="header.value" @click="handleClick(props.item)" @dblclick="handleEvent('BtnEdit', props.item)" @wheel="processScrollEvent()">
-              <v-edit-dialog v-if="(header.searchable && (props.item === curLine))" lazy @save="saveSearch(props.item, header.value, props.item[header.value]['#val#'])" @open="openSearch()" @close="closeSearch">
-                {{ props.item[header.value]['#val#'] }}
+            <td :ref="calcRef(props.item.linenumber)" v-hammer:tap="(e) => processTapEvent(e, props.item)" :class="getClass(props.item)" v-for="header in computedHeaders" :key="header.value" @click="handleClick(props.item)" @dblclick="handleEvent('BtnEdit', props.item)" @wheel="processScrollEvent()">
+              <v-edit-dialog v-if="(header.searchable && (props.item === curLine))" lazy @save="saveSearch(props.item, header.value, props.item[header.value])" @open="openSearch()" @close="closeSearch">
+                {{ props.item[header.value] }}
                 <template v-slot:input>
-                  <v-text-field v-model="props.item[header.value]['#val#']" single-line/>
+                  <v-text-field v-model="props.item[header.value]" single-line/>
                 </template>
               </v-edit-dialog>
-              <span v-else>{{ props.item[header.value]['#val#'] }}</span>
+              <span v-else>{{ props.item[header.value] }}</span>
             </td>
           </tr>
           <tr v-else>
-            <td :ref="calcRef(props.item.linenumber)" :style="getStyle(props.item)">
+            <td :ref="calcRef(props.item.linenumber)" :class="getClass(props.item)">
               <ul v-if="lineCount !== undefined" class="flex-content">
-                <li v-hammer:tap="(e) => processTapEvent(e, props.item)" class="flex-item" @click="handleClick(props.item)" v-for="header in computedHeaders" :key="header.value" :data-label="header.text"> {{ props.item[header.value]['#val#'] }} </li>
+                <li v-hammer:tap="(e) => processTapEvent(e, props.item)" class="flex-item" @click="handleClick(props.item)" v-for="header in computedHeaders" :key="header.value" :data-label="header.text"> {{ props.item[header.value] }} </li>
               </ul>
               <ul v-else v-hammer:pan="processSwipeEvent" class="flex-content">
-                <li v-hammer:tap="(e) => processTapEvent(e, props.item)" class="flex-item" @click="handleClick(props.item)" v-for="header in computedHeaders" :key="header.value" :data-label="header.text"> {{ props.item[header.value]['#val#'] }} </li>
+                <li v-hammer:tap="(e) => processTapEvent(e, props.item)" class="flex-item" @click="handleClick(props.item)" v-for="header in computedHeaders" :key="header.value" :data-label="header.text"> {{ props.item[header.value] }} </li>
               </ul>
             </td>
           </tr>
@@ -49,7 +49,6 @@
 </template>
 
 <script>
-/** version 1.0 */
 import ScrollModel from '@/core/data-models/scrollmodel'
 import Scrolldefinition from '@/core/data-models/scrolldefinition'
 import Footer from '@/core/components/footer'
@@ -66,13 +65,7 @@ export default {
     extendedscrollactions: Array,
     screenmodel: Object,
     toolBoxActions: Array,
-    lineCount: Number,
-    lastrefreshRequest: String
-  },
-  watch: {
-    'lastrefreshRequest': async function () {
-      await this.pgDown(this.curLine.linenumber)
-    }
+    lineCount: Number
   },
   computed: {
     computedHeaders: function () {
@@ -82,23 +75,16 @@ export default {
       if (this.model.headers !== undefined) {
         if ((this.scrolldefinition.visibleCols === undefined) || (this.scrolldefinition.visibleCols.length === 0)) compHeaders = Object.assign(compHeaders, this.model.headers)
         else {
-          let tmpHeadermap = {}
           this.model.headers.forEach((header) => {
             let index = this.scrolldefinition.visibleCols.indexOf(header.value)
-            if (index > -1) tmpHeadermap[header.value]=header
+            if (index > -1) compHeaders.splice(index, 0, header)
             if (header.value === this.model.pagination.sortBy) {
               sortHeader = header
               if (index > -1) sortColIncluded = true
             }
           })
-          this.scrolldefinition.visibleCols.forEach((vheader) => {
-            let foundHeader = tmpHeadermap[vheader]
-            if (foundHeader !== undefined) {
-              compHeaders.push(foundHeader)
-            }
-          })
-          if (!sortColIncluded && (sortHeader !== undefined)) compHeaders.unshift(sortHeader)
         }
+        if (!sortColIncluded && (sortHeader !== undefined)) compHeaders.unshift(sortHeader)
       }
       return compHeaders
     },
@@ -141,7 +127,7 @@ export default {
     },
     saveSearch: async function (line, headerValue, searchValue) {
       this.scrollRequestData.curSort = headerValue
-      line[headerValue]['#val#'] = searchValue
+      line[headerValue] = searchValue
       this.pgDown(line.linenumber)
     },
     calcRef: function (linenumber) {
@@ -170,49 +156,12 @@ export default {
     processScrollEvent: function () {
       if ((!this.loading) && ((this.lineCount === undefined) || (this.lineCount === 0))) (window.event.deltaY > 0) ? this.scrollDown() : this.scrollUp()
     },
-    getStyle2: function (line, headerValue) {
-      let result = 'text-align: left; overflow: hidden; '
-      this.isMobile ? result += ' height: 100px; max-height: 100px; ' : result += ' height: 50px; max-height: 50px; '
-      if (line === this.curLine) {
-        result += 'background: #3297FDFF; color: white; '
-      } else {
-        if ((line.linenumber % 2) === 0) result += ' background-color: #3297FD08; '
-        if (headerValue !== undefined) {
-          let bgColor = line[headerValue]['#bg#']
-          let fgColor = line[headerValue]['#fg#']
-          if (bgColor !== undefined) result += 'background-color: #' + bgColor + '; '
-          if (fgColor !== undefined) result += 'color: #' + fgColor + '; '
-        }
-      }
+    getClass: function (line) {
+      let result = 'unselected'
+      if (line === this.curLine) result = 'selected'
+      this.isMobile ? result += ' mobileHeight' : result += ' desctopHeight'
       return result
     },
-    getStyle: function (line, headerValue) {
-      let result = {
-        'text-align': 'left',
-        overflow: 'hidden'
-      }
-      if (this.isMobile) {
-        result.height = '100px'
-        result['max-height'] = '100px'
-      } else {
-        result.height = '50px'
-        result['max-height'] = '50px'
-      }
-      if (line === this.curLine) {
-        result['background-color'] = '#3297FDFF'
-        result.color = 'white'
-      } else {
-        if ((line.linenumber % 2) === 0) result['background-color'] = '#3297FD08'
-        if (headerValue !== undefined) {
-          let bgColor = line[headerValue]['#bg#']
-          let fgColor = line[headerValue]['#fg#']
-          if (bgColor !== undefined) result['background-color'] = '#' + bgColor
-          if (fgColor !== undefined) result.color = '#' + fgColor
-        }
-      }
-      return result
-    },
-
     translate: function (untranslated) {
       let result = untranslated
       try {
@@ -243,38 +192,34 @@ export default {
     },
     calcLastVisibleLineIndex () {
       let lastvisible = -1
-      if ((this.lineCount !== undefined) || (this.lineCount > 0)) {
-        lastvisible = this.model.lines.length - 1
-      } else {
-        let linerefs = Object.values(this.$refs)
-        this.calcLineCount()
-        let maxOffset = this.scrollheight - this.defaultLineheight
-        let linecounter = this.model.lines.length - 1
-        while ((linecounter >= 0) && (lastvisible < 0)) {
-          let line = this.model.lines[linecounter]
-          if (linerefs[linecounter] !== undefined) {
-            let curLine = linerefs[linecounter]
-            if (curLine !== undefined) {
-              if (!this.isMobile) {
-                if ((curLine[0] !== undefined) && (curLine[0].offsetTop !== undefined)) {
-                  if (maxOffset > curLine[0].offsetTop) lastvisible = line.linenumber
-                } else {
-                  if (curLine.offsetTop !== undefined) {
-                    if (maxOffset > curLine.offsetTop) lastvisible = line.linenumber
-                  }
-                }
+      let linerefs = Object.values(this.$refs)
+      this.calcLineCount()
+      let maxOffset = this.scrollheight - this.defaultLineheight
+      let linecounter = this.model.lines.length - 1
+      while ((linecounter >= 0) && (lastvisible < 0)) {
+        let line = this.model.lines[linecounter]
+        if (linerefs[linecounter] !== undefined) {
+          let curLine = linerefs[linecounter]
+          if (curLine !== undefined) {
+            if (!this.isMobile) {
+              if ((curLine[0] !== undefined) && (curLine[0].offsetTop !== undefined)) {
+                if (maxOffset > curLine[0].offsetTop) lastvisible = line.linenumber
               } else {
-                if ((curLine[0] !== undefined) && (curLine[0].offsetParten !== undefined) && (curLine[0].offsetParten.offsetTop !== undefined)) {
-                  if (maxOffset > curLine[0].offsetTop) lastvisible = line.linenumber
-                } else {
-                  if (curLine.offsetTop !== undefined) {
-                    if (maxOffset > curLine.offsetTop) lastvisible = line.linenumber
-                  }
+                if (curLine.offsetTop !== undefined) {
+                  if (maxOffset > curLine.offsetTop) lastvisible = line.linenumber
+                }
+              }
+            } else {
+              if ((curLine[0] !== undefined) && (curLine[0].offsetParten !== undefined) && (curLine[0].offsetParten.offsetTop !== undefined)) {
+                if (maxOffset > curLine[0].offsetTop) lastvisible = line.linenumber
+              } else {
+                if (curLine.offsetTop !== undefined) {
+                  if (maxOffset > curLine.offsetTop) lastvisible = line.linenumber
                 }
               }
             }
-            linecounter--
           }
+          linecounter--
         }
       }
       return lastvisible
@@ -373,9 +318,9 @@ export default {
     },
     handleEvent: function (actionCommand, event) {
       if ((!this.isSearchOpen) && (!this.isToolBoxOpen) && (!this.loading)) {
-        if (actionCommand === 'toolBoxEvent') this.$emit('handleEvent', actionCommand, event, this.curLine, this.model.linebokeyType)
-        if ((actionCommand === 'keyEvent') && (!this.processKeyEvent(event))) this.$emit('handleEvent', actionCommand, event, this.curLine, this.model.linebokeyType)
-        if (((this.extendedscrollactionsIDs.indexOf(actionCommand) > -1) && (actionCommand !== 'keyEvent'))) this.$emit('handleEvent', actionCommand, event, this.curLine, this.model.linebokeyType)
+        if (actionCommand === 'toolBoxEvent') this.$emit('handleEvent', actionCommand, event, this.curLine)
+        if ((actionCommand === 'keyEvent') && (!this.processKeyEvent(event))) this.$emit('handleEvent', actionCommand, event, this.curLine)
+        if (((this.extendedscrollactionsIDs.indexOf(actionCommand) > -1) && (actionCommand !== 'keyEvent'))) this.$emit('handleEvent', actionCommand, event, this.curLine)
       }
     },
     onResize () {
@@ -468,13 +413,33 @@ export default {
     this.ready = true
     try {
       await this.first()
-    } catch {}
+    } catch {
+    }
     this.loading = false
   }
 }
 </script>
 
 <style scoped>
+.selected {
+  background: #3297FD;
+  color: white;
+  text-align: left;
+  overflow: hidden;
+}
+.unselected {
+  text-align: left;
+  overflow: hidden;
+}
+.mobileHeight {
+  height: 100px;
+  max-height: 100px;
+}
+.desctopHeight {
+  height: 50px;
+  max-height: 50px;
+}
+
 @media screen and (max-width: 750px) {
     .mobile table.v-table tr {
       max-width: 100%;
