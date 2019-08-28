@@ -10,6 +10,5 @@ module.exports = {
   getScrollModel(scrollrequest, user){
     const sortcol=scrollrequest.sort
     const pers = new ScrollPersistency[sortcol]()
-    
   }
 }

@@ -1,3 +1,5 @@
+import AbstractScrollBO from './BO/AbstractScrollBO'
+
 const { User } = require('../models')
 const scrollBoFactory = require('../BO/ScrollBoFactory')
 module.exports = {
@@ -8,9 +10,9 @@ module.exports = {
         email: email
       }
     })
-    const scrollboname = scrollrequest.scrollBO
-    const scrollBO = scrollBoFactory.createInstance(scrollboname)
-    const result = scrollBO.getScrollModel(scrollrequest, user)
+    const scrollBO = scrollBoFactory.createInstance(scrollrequest.scrollBO)
+    const abstractScrollBO = new AbstractScrollBO(scrollBO)
+    const result = abstractScrollBO.getScrollModel(scrollrequest, user)
     return result
   }
 }
