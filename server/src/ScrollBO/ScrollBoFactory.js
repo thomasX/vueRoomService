@@ -1,8 +1,8 @@
 const ScrollBObyName = {
-  UserScrollBO: require('./UserScrollBO')
+  UserScrollBO: require('./User/UserScrollBO')
   // ...
 }
-module.exports = {
+export default class ScrollBoFactory {
   createInstance (name) {
     return new ScrollBObyName[name]()
   }

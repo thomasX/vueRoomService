@@ -1,7 +1,7 @@
 
+import scrollCtrl from './controllers/ScrollController'
 const AuthenticationController = require('./controllers/AuthenticationController')
 const AuthenticationControllerPolicy = require('./polices/AuthenticationControllerPolicy')
-const ScrollCtrl = require('./controllers/ScrollController')
 
 module.exports = (app) => {
   app.post('/User/register',
@@ -12,5 +12,5 @@ module.exports = (app) => {
 
   app.get('/User/activeAdminUserExists', AuthenticationController.activeAdminUserExists)
 
-  app.get('/Scroll/getScrollModel/:scrollBO', ScrollCtrl.getScrollModel)
+  app.get('/Scroll/getScrollModel/:scrollBO', scrollCtrl.getScrollModel)
 }

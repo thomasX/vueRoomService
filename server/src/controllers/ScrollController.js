@@ -1,8 +1,9 @@
-import AbstractScrollBO from './BO/AbstractScrollBO'
+import AbstractScrollBO from '../ScrollBO/AbstractScrollBO'
+import ScrollBoFactory from '../ScrollBO/ScrollBoFactory'
 
 const { User } = require('../models')
-const scrollBoFactory = require('../BO/ScrollBoFactory')
-module.exports = {
+
+export default class ScrollController {
   async getScrollModel (req, res) {
     const { email, scrollrequest } = req.body
     const user = await User.findOne({
@@ -10,9 +11,8 @@ module.exports = {
         email: email
       }
     })
-    const scrollBO = scrollBoFactory.createInstance(scrollrequest.scrollBO)
-    const abstractScrollBO = new AbstractScrollBO(scrollBO)
-    const result = abstractScrollBO.getScrollModel(scrollrequest, user)
+    const scrollBO = ScrollBoFactory.createInstance(scrollrequest.scrollBO)
+    const result = AbstractScrollBO.getScrollModel(scrollBO, scrollrequest, user)
     return result
   }
 }
