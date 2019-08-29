@@ -1,4 +1,4 @@
-export default class UserScrollPersistecyEMAIL {
+module.exports = class UserScrollPersistencyEMAIL {
   createFirstStatement (filter) {
     const statement = 'select * from Users where 1 = 1 #filter# order by email asc Limit 1'
     const filterstatement = this.createFilterstatement(filter)
