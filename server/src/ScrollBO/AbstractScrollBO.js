@@ -8,15 +8,20 @@ module.exports = class AbstractScrollBO {
     let firstDataReached = false
     let lastDataReached = false
     let startingLine = scrollrequest.start
-    if (scrollrequest.direction === true) {
+    const forward = scrollrequest.direction
+    let result 
+    if (forward) {
         if ((startingLine === undefined) || (startingLine === null ) {
-          startingLine = findFirst(scrollBO,scrollrequest,user)
           firstDataReached = true
+          startingLine = findFirst(scrollBO, scrollrequest, user)
         }
-        ...
+        if (startingLine !== undefined) {
+          result = findforward(scrollBO, scrollrequest, user, startingline))
+        }
     } else {
 
     }
     return lines
   }
+  
 }
