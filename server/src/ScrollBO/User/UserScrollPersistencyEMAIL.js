@@ -1,13 +1,13 @@
 module.exports = class UserScrollPersistencyEMAIL {
   createFirstStatement (filter) {
-    const statement = 'select * from Users where 1 = 1 #filter# order by email asc Limit 1'
+    const statement = 'select * from Users where 1 = 1 #filter# order by email asc Limit #rows#'
     const filterstatement = this.createFilterstatement(filter)
     statement.replace(/#filter#/, filterstatement)
     return statement
   }
 
   createLastStatement (filter) {
-    const statement = 'select * from Users where 1 = 1 #filter# order by email desc Limit 1'
+    const statement = 'select * from Users where 1 = 1 #filter# order by email desc Limit #rows#'
     const filterstatement = this.createFilterstatement(filter)
     statement.replace(/#filter#/, filterstatement)
     return statement
