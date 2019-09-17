@@ -1,78 +1,66 @@
 <template>
   <div>
     <v-progress-circular v-if="!ready" indeterminate color="primary" />
-    <DataScroll v-if="ready" :screenmodel="screenmodel" :scrolldefinition="scrolldefinition" :extendedscrollactions="extendedscrollactions" :toolBoxActions="toolBoxActions" @handleEvent="handleEvent" :lineCount="lineCount"/>
+    <DataScroll ref="scroll" v-if="ready" :lastrefreshRequest="lastrefreshRequest" :screenmodel="screenmodel" :scrolldefinition="scrolldefinition" :extendedscrollactions="extendedscrollactions" @handleEvent="handleEvent" :lineFactor="lineFactor"/>
   </div>
 </template>
 
 <script>
-import DataScroll from '@/core/components/datascroll'
-import ScreenmodelService from '@/services/ScreenmodelService'
-
+import DataScroll from '@/core/components/scroll/datascroll'
+import Screenmodel from '@/core/data-models/screenmodel'
+// import TransportFinishingDialog from '@/modules/transport/dialogs/TransportFinishingDialog.vue'
+import UserScrollService from '@/modules/Usermaintenance/userscrollService'
 
 export default {
-  name: 'User',
+  name: 'UserScroll_Main',
   components: {
     DataScroll
   },
   data () {
     return {
-      lineCount: 200,
       ready: false,
+      lastrefreshRequest: '',
+      // callbackTransportFinishingDlg: 'actionCloseTransportFinishingDialog',
+      editDialogOpened: false,
+      dataModel: {},
+      lineFactor: 10,
       scrolldefinition: {
-        scrollBO: 'UserScrollBO',
-        scrollID: 'Userscoll',
-        curSort: 'email'
+        scrollBO: 'at.felder.FERPS.EJB.Session.Transport.TransportScrollBO',
+        scrollID: 'vue_Userscroll_Main',
+        // appfilter: "((GRP like '%|G43|%') AND (ACTIVE < '#now#'))",
+        // visibleCols: ['PRIOR', 'ANR', 'BENENNUNG', 'STK', 'CURSTART', 'CURSTOP', 'BEMERKG', 'END_CLAGTYP', 'MARKUP'],
+        curSort: 'EMAIL'
       },
       extendedscrollactions: [
         {
           name: 'BtnEdit',
           icon: 'edit'
-        },
-        {
-          name: 'BtnCreate',
-          icon: 'add'
-        },
-        {
-          name: 'BtnDelete',
-          icon: 'delete'
-        },
-        {
-          name: 'BtnDuplicate',
-          icon: 'file_copy'
-        },
-        {
-          name: 'BtnEscape',
-          icon: 'clear'
-        }
-      ],
-      toolBoxActions: [
-        {
-          name: 'ToolBoxAction1'
-        },
-        {
-          name: 'Abort',
-          icon: 'clear'
         }
       ]
     }
   },
   methods: {
     handleEvent: function (actionCommand, event, line) {
-      if (actionCommand === 'BtnEscape') this.$router.push('/reservations')
-      if (actionCommand === 'BtnEdit') alert('Edit: \n' + JSON.stringify(line))
-      if (actionCommand === 'toolBoxEvent') alert('ToolBox: \n' + JSON.stringify(line))
+      if (actionCommand === 'BtnEdit') this.actionOpenUserDialog(line)
+      if (actionCommand === this.callbackTransportFinishingDlg) this.actionCloseTransportFinishingDialog(event)
+    },
+    async actionOpenUserDialog (line) {
+      // implement later
+    },
+    actionCloseUserDialog (event) {
+      this.editDialogOpened = false
+      this.refreshScroll(this.dlgDataModel.changedBokey !== undefined)
+    },
+    refreshScroll (update) {
+      if (update) this.lastrefreshRequest = new Date().toISOString()
+      this.$refs.scroll.requestFocus()
     }
   },
   async beforeMount () {
-    const screenID = 'usermaintenance'
-    const language = 'de'
-
-    this.screenmodel =  await ScreenmodelService.getScreenmodel(screenID, language)
+    this.userscrollService = new UserScrollService(this.$api)
+    this.mandCtxt = this.$store.getters['ctxtStore/get']
+    this.screenmodel = await new Screenmodel().init(this.mandCtxt.mandantenID, this.mandCtxt.email, 'vue_UserScroll_Main', this.$api)
     this.ready = true
   }
 }
 </script>
-
-<style>
-</style>

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import datascroll from  '@/core/components/datascroll'
+import datascroll from  '@/core/components/scroll/datascroll'
 import Scrollmodel from '@/core/models/scrollmodel'
 export default {
   name: 'menue',

@@ -5,7 +5,7 @@ export default class scrollCtrl {
     this.api = api
   }
   async getScrollModel (userCtxt, scrollRequest, screenmodel, startLine) {
-    const result = await new ScrollService().getScrollModel(userCtxt.email, scrollRequest, screenmodel, startLine)
+    const result = await new ScrollService().getScrollModel(userCtxt, scrollRequest, screenmodel, startLine)
     return result
   }
 }

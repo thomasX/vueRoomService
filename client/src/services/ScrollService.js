@@ -2,7 +2,7 @@ import Api from '@/services/Api'
 import ScrollModel from '@/core/data-models/scrollmodel'
 
 export default {
-  async getScrollModel (email, scrollRequest, screenmodel, startLine) {
+  async getScrollModel (userCtxt, scrollRequest, screenmodel, startLine) {
     try {
       const params = {
           mail: userCtxt.email,
@@ -10,9 +10,9 @@ export default {
       }
       if (startLine !== undefined) params.scrollRequest.start = startLine
       const scrollResponse = await Api().get(`/Scroll/getScrollModel`)
-      return new ScrollModel(screenId, screenmodel)
+      return new ScrollModel(scrollResponse, screenmodel)
     } catch (error) {
-      console.log(JSON.stringify(error));
+      alert(JSON.stringify(error));
     }
   }
 

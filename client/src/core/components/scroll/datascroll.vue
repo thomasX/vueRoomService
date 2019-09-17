@@ -168,7 +168,9 @@ export default {
       this.offsetTop = e.target.scrollTop
       try {
         this.markDataEndReached()
-      } catch {}
+      } catch {
+        // nothing todo
+      }
     },
     processTapEvent (e, line) {
       let timeout
@@ -191,6 +193,7 @@ export default {
       try {
         this.markDataEndReached()
       } catch (error) {
+        // nothing todo
       }
     },
     getHeaderStyle (header) {
@@ -274,7 +277,9 @@ export default {
       let result = untranslated
       try {
         result = this.screenmodel.translate(untranslated)
-      } catch {}
+      } catch {
+        // nothing todo
+      }
       return result
     },
     processKeyEvent (event) {
@@ -408,7 +413,9 @@ export default {
       let startLine
       try {
         startLine = this.model.lines[0]
-      } catch {}
+      } catch {
+        // nothing todo
+      }
       const scrollRequest = this.generateScrollRequest(false)
       this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel, startLine)
       this.curLine = this.model.lines[this.model.lines.length - 1]
@@ -487,7 +494,9 @@ export default {
       try {
         lastLineIndex = ((curLineIndex === undefined) || (typeof curLineIndex !== 'number')) ? this.calcLastVisibleLineIndex() : curLineIndex
         lastLine = this.model.lines[lastLineIndex]
-      } catch {}
+      } catch {
+        // nothing todo
+      }
       const scrollRequest = this.generateScrollRequest(true)
       this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel, lastLine)
       this.curLine = this.model.lines[0]
@@ -534,7 +543,9 @@ export default {
         try {
           lines = parseInt((lines * this.lineFactor))
           this.predefinedlineCount = lines
-        } catch {}
+        } catch {
+          // nothing todo
+        }
       }
       return lines
     },
@@ -596,7 +607,9 @@ export default {
     this.ready = true
     try {
       await this.first()
-    } catch {}
+    } catch {
+      // nothing todo
+    }
     this.loading = false
   },
   async mounted () {

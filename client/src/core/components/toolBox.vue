@@ -42,14 +42,18 @@ export default {
       let result = '#' + untranslated + '#'
       try {
         result = this.screenmodel.translate(untranslated)
-      } catch {}
+      } catch {
+        // nothing todo
+      }
       return result
     },
     translateToolTip: function (untranslated) {
       let result = ''
       try {
         result = this.screenmodel.translateToolTip(untranslated)
-      } catch {}
+      } catch {
+       // nothing todo
+      }
       return result
     },
     handleEvent: function (actionCommand) {
