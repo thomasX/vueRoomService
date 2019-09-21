@@ -1,69 +1,68 @@
-module.exports = class AbstractScrollBO {
-  getScrollModel (scrollBO, scrollrequest, userCtxt) {
-    const lines = collectLines(scrollBO,scrollrequest,userCtxt)
-    return lines
+module.exports = (db) => class AbstractScrollBO {
+  constructor (db) {
+    this.db = db
   }
 
   async collectLines (scrollBO, scrollrequest, userCtxt) {
-    let firstDataReached = false
-    let lastDataReached = false
     let startingLine = scrollrequest.start
     const forward = scrollrequest.direction
-    let result 
+    const result = { firstDataReached: false, lastDataReached: false, lines: [] }
     if (forward) {
-        if ((startingLine === undefined) || (startingLine === null )) {
-          firstDataReached = true
-          startingLine = await findFirst(scrollBO, scrollrequest, userCtxt)
+      if ((startingLine === undefined) || (startingLine === null)) {
+        result.firstDataReached = true
+        startingLine = await this.findFirst(scrollBO, scrollrequest, userCtxt)
+      }
+      if ((startingLine !== undefined) || (startingLine === null)) {
+        result.lines = await this.findforward(scrollBO, scrollrequest, userCtxt, startingLine)
+      }
+      if ((result === undefined) || (result.lines.length < 0)) {
+        result.lastDataReached = true
+        startingLine = await this.findLast(scrollBO, scrollrequest, userCtxt)
+        if ((startingLine === undefined) || (startingLine === null)) {
+          result.lines = await this.findbackward(scrollBO, scrollrequest, userCtxt, startingLine)
         }
-        if ((startingLine !== undefined) || (startingline === null)) {
-          result = await findforward(scrollBO, scrollrequest, userCtxt, startingline)
-        }
-        if ((result === undefined) || (result.length() < 0)) {
-          lastDataReached = true
-          startingLine = await findLast(scrollBO, scrollrequest, userCtxt)
-          if ((startingLine === undefined) || (startingLine === null )) {
-            result = await findbackward(scrollBO, scrollrequest, userCtxt, startingLine)
-          }
-        }
+      }
     } else {
-      if ((startingLine === undefined) || (startingLine === null )) {
-        lastDataReached = true
-        startingLine = await findLast(scrollBO, scrollrequest, userCtxt)
+      if ((startingLine === undefined) || (startingLine === null)) {
+        result.lastDataReached = true
+        startingLine = await this.findLast(scrollBO, scrollrequest, userCtxt)
       }
-      if ((startingLine !== undefined) || (startingline === null)) {
-        result = await findbackward(scrollBO, scrollrequest, userCtxt, startingline)
+      if ((startingLine !== undefined) || (startingLine === null)) {
+        result.lines = await this.findbackward(scrollBO, scrollrequest, userCtxt, startingLine)
       }
-      if ((result === undefined) || (result.length() < 0)) {
-        firstDataReached = true
-        startingLine = await findFirst(scrollBO, scrollrequest, userCtxt)
-        if ((startingLine === undefined) || (startingLine === null )) {
-          result = await findforward(scrollBO, scrollrequest, userCtxt, startingLine)
+      if ((result === undefined) || (result.lines.length < 0)) {
+        result.firstDataReached = true
+        startingLine = await this.findFirst(scrollBO, scrollrequest, userCtxt)
+        if ((startingLine === undefined) || (startingLine === null)) {
+          result.lines = await this.findforward(scrollBO, scrollrequest, userCtxt, startingLine)
         }
       }
     }
-    return lines
+    return result
   }
+
   async findFirst (scrollBO, scrollrequest, userCtxt) {
-    const statement = scrollBO.pers.createFirstStatement(scrollrequest.filter, 1)
-    return await find(scrollBO, scrollrequest, userCtxt, realStatement)
+    const realStatement = scrollBO.pers.createFirstStatement(scrollrequest.filter, 1)
+    return this.find(scrollBO, scrollrequest, userCtxt, realStatement)
   }
+
   async findLast (scrollBO, scrollrequest, userCtxt, rows) {
-    const statement = scrollBO.pers.createLastStatement(scrollrequest.filter, 1)
-    return await find(scrollBO, scrollrequest, userCtxt, realStatement)
+    const realStatement = scrollBO.pers.createLastStatement(scrollrequest.filter, 1)
+    return this.find(scrollBO, scrollrequest, userCtxt, realStatement)
   }
+
   async findForward (scrollBO, scrollrequest, userCtxt) {
-    const statement = scrollBO.pers.createForwardStatement(scrollrequest.filter, scrollrequest.rows)
-    return await find(scrollBO, scrollrequest, userCtxt, realStatement)
+    const realStatement = scrollBO.pers.createForwardStatement(scrollrequest.filter, scrollrequest.rows)
+    return this.find(scrollBO, scrollrequest, userCtxt, realStatement)
   }
+
   async findBackward (scrollBO, scrollrequest, userCtxt) {
-    const statement = scrollBO.pers.createBackwardStatement(scrollrequest.filter, scrollrequest.rows)
-    return await find(scrollBO, scrollrequest, userCtxt, realStatement)
+    const realStatement = scrollBO.pers.createBackwardStatement(scrollrequest.filter, scrollrequest.rows)
+    return this.find(scrollBO, scrollrequest, userCtxt, realStatement)
   }
 
-
-
-  find (scrollBO, scrollrequest, userCtxt, realStatement) {
-    sequelize
+  async find (scrollBO, scrollrequest, userCtxt, realStatement) {
+    db.sequelize
       .query(realStatement, {
         model: scrollBO.pers.model,
         mapToModel: true
@@ -76,4 +75,8 @@ module.exports = class AbstractScrollBO {
       })
   }
 
+  getScrollModel (scrollBO, scrollrequest, userCtxt) {
+    const lines = this.collectLines(scrollBO, scrollrequest, userCtxt)
+    return lines
+  }
 }
