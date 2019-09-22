@@ -1,4 +1,3 @@
-import ScrollModel from '@/core/data-models/scrollmodel'
 import ScrollService from '@/services/ScrollService'
 export default class scrollCtrl {
   constructor (api) {
