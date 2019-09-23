@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar ref="header" app name="appbar" fixed class="cyan" dark>
+  <v-app-bar ref="header" app name="appbar" color="primary"  dark>
     <v-toolbar-title class="mr-4">
       <router-link 
         class="home"
@@ -11,14 +11,8 @@
       </router-link>
     </v-toolbar-title>
     <v-toolbar-items>
-      <v-btn 
-        text 
-        dark
-        :to="{
-          name: 'reservations'
-        }">
-        Reservations
-      </v-btn>
+      <v-btn text dark :to="{name: 'reservations'}">Reservations</v-btn>
+      <v-btn text dark :to="{name: 'Usermaintenance'}">Usermaintenance</v-btn>
     </v-toolbar-items>
       <v-spacer></v-spacer>
     <v-toolbar-items>

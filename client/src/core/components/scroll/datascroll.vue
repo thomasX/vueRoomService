@@ -1,7 +1,7 @@
 <template>
   <div ref="scrollContainer" v-if="ready" v-on:keyup="handleKeyEvent" v-on:keydown.prevent tabindex="0">
     <v-layout v-resize="onResize" column>
-      <v-data-table ref="dataTable" :headers=computedHeaders :items=model.lines :class="{mobile: isMobile}" :loading="loading" :height="computedHeight" hide-default-header hide-default-footer disable-pagination must-sort fixed-header>
+      <v-data-table ref="dataTable" :headers=computedHeaders :items=model.lines :class="{mobile: isMobile}" :loading="loading" :height="getHeight()" hide-default-header hide-default-footer disable-pagination must-sort fixed-header>
         <v-progress-linear indeterminate v-slot:progress/>
         <template v-if="!isMobile" v-slot:header="props">
           <thead fixed-header ref="dataTableFixedHeader">
@@ -15,7 +15,7 @@
         </template>
         <template v-slot:item="props">
         <!-- not mobile START -->
-          <tr v-if="!isMobile" v-hammer:pan="processSwipeEvent" @click="handleClick(props.item)" v-hammer:tap="(e) => processTapEvent(e, props.item)" >
+          <tr v-if="!isMobile" v-touch:swipe="processSwipeEvent" @click="handleClick(props.item)" v-touch:tap="(e) => processTapEvent(e, props.item)" >
             <td :ref="'refItem_line_' + props.item.linenumber" :style="getStyle(props.item, header.value)" @wheel="processWheelEvent" v-for="header in computedHeaders" :key="header.value">
               <v-edit-dialog v-if="(header.searchable && (props.item === curLine))" :ref="('editDlg_' + props.item.linenumber + '_' + header.value)" @save="saveSearch(props.item, header.value, props.item[header.value]['#val#'])" @open="openSearch" @close="closeSearch" lazy>
                 {{ props.item[header.value]['#val#'] }}
@@ -28,10 +28,10 @@
           </tr>
         <!-- not mobile END-->
         <!-- mobile START -->
-          <tr v-else v-hammer:pan="processSwipeEvent" @click="handleClick(props.item)" v-hammer:tap="(e) => processTapEvent(e, props.item)">
+          <tr v-else v-touch:swipe="processSwipeEvent" @click="handleClick(props.item)" v-touch:tap="(e) => processTapEvent(e, props.item)">
             <td :ref="'refItem_line_' + props.item.linenumber" :style="getStyle(props.item)">
               <ul class="flex-content">
-                <li :style="'border-left: 5px solid #' + props.item[header.value]['#bg#']" class="flex-item" v-for="header in computedHeaders" :key="header.value" :data-label="header.text">
+                <li :style="getMobileStyle(props.item[header.value]['#bg#'])" v-for="header in computedHeaders" :key="header.value" :data-label="header.text">
                   <v-edit-dialog :ref="('editDlg_' + props.item.linenumber + '_' + header.value)" v-if="(header.searchable && (props.item === curLine))" lazy @save="saveSearch(props.item, header.value, props.item[header.value]['#val#'])" @open="openSearch" @close="closeSearch">
                     {{ props.item[header.value]['#val#'] }}
                     <template v-slot:input>
@@ -78,7 +78,6 @@ export default {
     return {
       predefinedlineCount: undefined,
       offsetTop: 0,
-      innerHeight: 0,
       scrollHeaderHeight: 56,
       lastTap: 0,
       lastTapLine: {},
@@ -155,22 +154,29 @@ export default {
         }
       }
       return compHeaders
-    },
-    computedHeight () {
-      // TODO fix height-calculation
-      let headerHeight = this.$root.$children[0].$refs.appHeader.getHeight()
-      let footerHeight = (this.isMobile) ? 50 : 100
-      return (this.innerHeight - headerHeight - footerHeight) + 'px'
     }
   },
   methods: {
+    getHeight () {
+      let headerHeight = this.$root.$children[0].$refs.appHeader.getHeight()
+      let footerHeight = (this.$refs.dateTableFixedFooter) ? this.$refs.dateTableFixedFooter.getHeight() : 0
+      let height = parseInt(headerHeight) + parseInt(footerHeight)
+      return 'calc(100vh - ' + height + 'px)'
+    },
+    getMobileStyle (bgColor) {
+      let calculatedWidth = parseInt(100 / this.computedHeaders.length)
+      if (calculatedWidth <= 25) calculatedWidth = 25
+      return {
+        'border-left': '5px solid #' + bgColor,
+        width: calculatedWidth + '%',
+        overflow: 'hidden'
+      }
+    },
     onScroll (e) {
       this.offsetTop = e.target.scrollTop
       try {
         this.markDataEndReached()
-      } catch {
-        // nothing todo
-      }
+      } catch {}
     },
     processTapEvent (e, line) {
       let timeout
@@ -193,7 +199,6 @@ export default {
       try {
         this.markDataEndReached()
       } catch (error) {
-        // nothing todo
       }
     },
     getHeaderStyle (header) {
@@ -216,16 +221,14 @@ export default {
       this.markDataEndReached()
     },
     async processSwipeEvent (event) {
-      if (event.srcEvent.pressure !== 0) {
-        if (((this.predefinedlineCount === undefined) || (this.predefinedlineCount === 0)) && (event.pointerType === 'touch')) {
-          if (event.deltaY > 0) await this.pgUp()
-          if (event.deltaY < 0) await this.pgDown()
-        } else {
-          if ((!this.loading) && (this.offsetTop < 1) && (event.deltaY > 0)) this.pgUp()
-          if ((!this.loading) && (this.offsetTop > 0) && (event.deltaY < 0)) {
-            const maxOffset = this.dataTable.scrollHeight - this.$refs.scrollContainer.getBoundingClientRect().height
-            if (this.offsetTop >= maxOffset) this.pgDown()
-          }
+      if ((this.predefinedlineCount === undefined) || (this.predefinedlineCount === 0)) {
+        if (event === 'bottom') await this.pgUp()
+        if (event === 'top') await this.pgDown()
+      } else {
+        if ((!this.loading) && (this.offsetTop < 1) && (event === 'bottom')) this.pgUp()
+        if ((!this.loading) && (this.offsetTop > 0) && (event === 'top')) {
+          const maxOffset = this.dataTable.scrollHeight - this.$refs.scrollContainer.getBoundingClientRect().height
+          if (this.offsetTop >= maxOffset) this.pgDown()
         }
       }
     },
@@ -277,9 +280,7 @@ export default {
       let result = untranslated
       try {
         result = this.screenmodel.translate(untranslated)
-      } catch {
-        // nothing todo
-      }
+      } catch {}
       return result
     },
     processKeyEvent (event) {
@@ -303,31 +304,37 @@ export default {
       }
     },
     async scrollUp () {
-      if (this.model.lines.indexOf(this.curLine, 0) === 0) await this.pgUp()
+      if (this.model.lines === undefined) this.first()
       else {
-        let curLineProps = await this.calcLineProperties(this.$refs.scrollContainer, this.$refs['refItem_line_' + this.curLine.linenumber], true)
-        if (curLineProps.visible) {
-          this.curLine = this.model.lines[this.model.lines.indexOf(this.curLine, 0) - 1]
-          let element = this.$refs['refItem_line_' + this.curLine.linenumber]
-          const lineProps = await this.calcLineProperties(this.$refs.scrollContainer, element, true)
-          if (!lineProps.visible) this.dataTable.scrollTop = lineProps.reqFirstLineOffset
-        } else {
-          this.dataTable.scrollTop = curLineProps.reqFirstLineOffset
+        if (this.model.lines.indexOf(this.curLine, 0) === 0) await this.pgUp()
+        else {
+          let curLineProps = await this.calcLineProperties(this.$refs.scrollContainer, this.$refs['refItem_line_' + this.curLine.linenumber], true)
+          if (curLineProps.visible) {
+            this.curLine = this.model.lines[this.model.lines.indexOf(this.curLine, 0) - 1]
+            let element = this.$refs['refItem_line_' + this.curLine.linenumber]
+            const lineProps = await this.calcLineProperties(this.$refs.scrollContainer, element, true)
+            if (!lineProps.visible) this.dataTable.scrollTop = lineProps.reqFirstLineOffset
+          } else {
+            this.dataTable.scrollTop = curLineProps.reqFirstLineOffset
+          }
         }
       }
     },
     async scrollDown () {
-      let lastvisibleLineNr = this.calcLastVisibleLineIndex()
-      if (this.curLine.linenumber === lastvisibleLineNr) await this.pgDown(lastvisibleLineNr)
+      if (this.model.lines === undefined) this.first()
       else {
-        let curLineProps = await this.calcLineProperties(this.$refs.scrollContainer, this.$refs['refItem_line_' + this.curLine.linenumber], true)
-        if (curLineProps.visible) {
-          this.curLine = this.model.lines[this.model.lines.indexOf(this.curLine, 0) + 1]
-          let element = this.$refs['refItem_line_' + this.curLine.linenumber]
-          const lineProps = await this.calcLineProperties(this.$refs.scrollContainer, element, true)
-          if (!lineProps.visible) this.dataTable.scrollTop = lineProps.reqLastLineOffset
-        } else {
-          this.dataTable.scrollTop = curLineProps.reqLastLineOffset
+        let lastvisibleLineNr = this.calcLastVisibleLineIndex()
+        if (this.curLine.linenumber === lastvisibleLineNr) await this.pgDown(lastvisibleLineNr)
+        else {
+          let curLineProps = await this.calcLineProperties(this.$refs.scrollContainer, this.$refs['refItem_line_' + this.curLine.linenumber], true)
+          if (curLineProps.visible) {
+            this.curLine = this.model.lines[this.model.lines.indexOf(this.curLine, 0) + 1]
+            let element = this.$refs['refItem_line_' + this.curLine.linenumber]
+            const lineProps = await this.calcLineProperties(this.$refs.scrollContainer, element, true)
+            if (!lineProps.visible) this.dataTable.scrollTop = lineProps.reqLastLineOffset
+          } else {
+            this.dataTable.scrollTop = curLineProps.reqLastLineOffset
+          }
         }
       }
     },
@@ -361,11 +368,11 @@ export default {
       let fixedHeader = this.$refs.dataTableFixedHeader
       let fixedHeaderHeight = (fixedHeader === undefined) ? 0 : fixedHeader.getBoundingClientRect().height
       let fixedFooter = this.$refs.dateTableFixedFooter
-      let fixedFooterHeight = (fixedFooter === undefined) ? 0 : fixedFooter.$el.clientHeight
+      let fixedFooterHeight = (fixedFooter === undefined) ? 0 : fixedFooter.getHeight()
       let headerHeight = (this.isMobile) ? 0 : fixedHeaderHeight
       const rect = viewport.getBoundingClientRect()
       let minOffset = headerHeight + this.offsetTop
-      const maxOffset = this.innerHeight - fixedFooterHeight - rect.top + this.offsetTop
+      const maxOffset = window.innerHeight - fixedFooterHeight - rect.top + this.offsetTop
       const lineOffsetAndHeight = this.calcLineOffsetAndHeight(element)
       result.offset = lineOffsetAndHeight.offset
       result.height = lineOffsetAndHeight.height
@@ -413,12 +420,10 @@ export default {
       let startLine
       try {
         startLine = this.model.lines[0]
-      } catch {
-        // nothing todo
-      }
+      } catch {}
       const scrollRequest = this.generateScrollRequest(false)
       this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel, startLine)
-      this.curLine = this.model.lines[this.model.lines.length - 1]
+      this.curLine = (undefined !== this.model.lines) ? this.model.lines[this.model.lines.length - 1] : undefined
       this.loading = false
       this.dataTable.scrollTop = Number.MAX_SAFE_INTEGER
       this.requestFocus()
@@ -434,7 +439,7 @@ export default {
       }
     },
     async prevPage () {
-      if (this.model.lines.indexOf(this.curLine, 0) === 0) await this.pgUp()
+      if ((undefined !== this.model.lines) && (this.model.lines.indexOf(this.curLine, 0) === 0)) await this.pgUp()
       else {
         const prevStartingPosition = this.getCachedStartingLine(false)
         if (prevStartingPosition === undefined) {
@@ -494,12 +499,10 @@ export default {
       try {
         lastLineIndex = ((curLineIndex === undefined) || (typeof curLineIndex !== 'number')) ? this.calcLastVisibleLineIndex() : curLineIndex
         lastLine = this.model.lines[lastLineIndex]
-      } catch {
-        // nothing todo
-      }
+      } catch {}
       const scrollRequest = this.generateScrollRequest(true)
       this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel, lastLine)
-      this.curLine = this.model.lines[0]
+      this.curLine = (undefined !== this.model.lines) ? this.model.lines[0] : undefined
       this.loading = false
       this.dataTable.scrollTop = 0
       this.requestFocus()
@@ -508,7 +511,7 @@ export default {
       this.loading = true
       const scrollRequest = this.generateScrollRequest(true)
       this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel)
-      this.curLine = this.model.lines[0]
+      this.curLine = (undefined !== this.model.lines) ? this.model.lines[0] : undefined
       this.loading = false
       this.dataTable.scrollTop = 0
       this.requestFocus()
@@ -517,7 +520,7 @@ export default {
       this.loading = true
       const scrollRequest = this.generateScrollRequest(false)
       this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel)
-      this.curLine = this.model.lines[this.model.lines.length - 1]
+      this.curLine = (undefined !== this.model.lines) ? this.model.lines[this.model.lines.length - 1] : undefined
       this.loading = false
       this.dataTable.scrollTop = Number.MAX_SAFE_INTEGER
       this.requestFocus()
@@ -543,9 +546,7 @@ export default {
         try {
           lines = parseInt((lines * this.lineFactor))
           this.predefinedlineCount = lines
-        } catch {
-          // nothing todo
-        }
+        } catch {}
       }
       return lines
     },
@@ -585,7 +586,6 @@ export default {
   async beforeMount () {
     if (this.lineCount !== undefined) this.predefinedlineCount = this.lineCount
     this.scrollCtrl = new ScrollCtrl(this.$api)
-    this.innerHeight = window.innerHeight
     this.mandCtxt = this.$store.getters['ctxtStore/get']
     this.scrollRequestData.scrollBO = this.scrolldefinition.scrollBO
     this.scrollRequestData.scrollID = this.scrolldefinition.scrollID
@@ -607,9 +607,7 @@ export default {
     this.ready = true
     try {
       await this.first()
-    } catch {
-      // nothing todo
-    }
+    } catch {}
     this.loading = false
   },
   async mounted () {
@@ -658,11 +656,4 @@ export default {
   width: 100%;
   overflow: hidden
 }
-
-.flex-item {
-  width: 25%;
-  padding-left: 1vh;
-  overflow: hidden
-}
-
 </style>

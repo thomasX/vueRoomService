@@ -41,7 +41,7 @@ export default new Router({
     },
     {
       path: '/Usermaintenance',
-      name: 'Usermeintenance',
+      name: 'Usermaintenance',
       component: Usermaintenance
     },
     {

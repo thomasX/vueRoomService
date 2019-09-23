@@ -1,12 +1,10 @@
 <template>
   <div id="app">
-    <v-app>
-      <pageheader ref="appHeader"/>
+    <v-app id="inspire">
+      <Header ref="appHeader"/>
       <main>
         <v-content>
-          <v-container fluid>
-            <router-view></router-view>
-          </v-container>
+          <router-view/>
         </v-content>
       </main>
     </v-app>
@@ -14,11 +12,11 @@
 </template>
 
 <script>
-import pageheader from '@/core/components/pageheader.vue'
+import Header from '@/core/components/pageheader.vue'
 export default {
   name: 'app',
   components: {
-    pageheader
+    Header
   },
   data () {
     return {

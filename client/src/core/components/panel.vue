@@ -1,6 +1,6 @@
 <template>
   <v-card id="apanel" class="white elevation-2">
-    <v-toolbar name="panelToolbar" flat dense class="cyan" dark>
+    <v-toolbar name="panelToolbar" flat dense color="primary"  dark>
       <v-toolbar-title>{{title}}</v-toolbar-title>
       <slot name="action" />
     </v-toolbar>
