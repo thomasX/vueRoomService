@@ -49,7 +49,7 @@
     },
     "extends": [
       "plugin:vue/essential",
-      "@vue/standard"
+      "eslint:recommended"
     ],
     "rules": {},
     "parserOptions": {

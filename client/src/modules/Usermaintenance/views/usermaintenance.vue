@@ -22,15 +22,13 @@ export default {
     return {
       ready: false,
       lastrefreshRequest: '',
-      // callbackTransportFinishingDlg: 'actionCloseTransportFinishingDialog',
+      //callbackTransportFinishingDlg: 'actionCloseTransportFinishingDialog',
       editDialogOpened: false,
       dataModel: {},
       lineFactor: 10,
       scrolldefinition: {
-        scrollBO: 'at.felder.FERPS.EJB.Session.Transport.TransportScrollBO',
+        scrollBO: 'UserScrollBO',
         scrollID: 'vue_Userscroll_Main',
-        // appfilter: "((GRP like '%|G43|%') AND (ACTIVE < '#now#'))",
-        // visibleCols: ['PRIOR', 'ANR', 'BENENNUNG', 'STK', 'CURSTART', 'CURSTOP', 'BEMERKG', 'END_CLAGTYP', 'MARKUP'],
         curSort: 'EMAIL'
       },
       extendedscrollactions: [
@@ -47,9 +45,10 @@ export default {
       if (actionCommand === this.callbackTransportFinishingDlg) this.actionCloseTransportFinishingDialog(event)
     },
     async actionOpenUserDialog (line) {
-      // implement later
+      alert('todo: implement actionOpenUserDialog' + line)
     },
     actionCloseUserDialog (event) {
+      alert(JSON.stringify(event))
       this.editDialogOpened = false
       this.refreshScroll(this.dlgDataModel.changedBokey !== undefined)
     },
