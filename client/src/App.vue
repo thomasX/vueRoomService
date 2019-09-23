@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <v-app>
-      <pageheader />
+      <pageheader ref="appHeader"/>
       <main>
         <v-content>
           <v-container fluid>

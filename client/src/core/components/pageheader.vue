@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app name="appbar" fixed class="cyan" dark>
+  <v-app-bar ref="header" app name="appbar" fixed class="cyan" dark>
     <v-toolbar-title class="mr-4">
       <router-link 
         class="home"

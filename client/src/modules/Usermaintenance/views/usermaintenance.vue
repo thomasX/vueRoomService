@@ -7,7 +7,6 @@
 
 <script>
 import DataScroll from '@/core/components/scroll/datascroll'
-import Screenmodel from '@/core/data-models/screenmodel'
 import ScreenmodelService from '@/services/ScreenmodelService'
 
 // import TransportFinishingDialog from '@/modules/transport/dialogs/TransportFinishingDialog.vue'
@@ -60,7 +59,7 @@ export default {
   async beforeMount () {
     this.userscrollService = new UserScrollService(this.$api)
     this.user = this.$store.state.user
-    this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserScroll_Main',user.language)
+    this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserScroll_Main',this.user.language)
     this.ready = true
   }
 }
