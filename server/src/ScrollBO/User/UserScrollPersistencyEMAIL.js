@@ -34,6 +34,7 @@ module.exports = class UserScrollPersistencyEMAIL {
     if ((filter !== undefined) && (filter.length > 0)) {
       filterstatement = 'AND ( ' + filter + ' ) '
     }
+    console.log('filterstatement:' + filterstatement)
     return filterstatement
   }
 }

@@ -5,7 +5,11 @@ import Screenmodel from '@/core/data-models/screenmodel'
 export default {
   async getScreenmodel (screenId, language) {
     try {
-      const screenmodelResponse = await Api().get(`Screenmodel/${screenId}/${language}`)
+      const withTranslations = process.env.VUE_APP_ROOMSERVICE_TRANSLATION_ACTIV
+      let screenmodelResponse ={data: ''}
+      if (withTranslations === true) {
+        screenmodelResponse = await Api().get(`Screenmodel/${screenId}/${language}`)
+      }
       return new Screenmodel(screenId, screenmodelResponse.data)
     } catch {
       return new Screenmodel(screenId)

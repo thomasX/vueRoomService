@@ -586,7 +586,7 @@ export default {
   async beforeMount () {
     if (this.lineCount !== undefined) this.predefinedlineCount = this.lineCount
     this.scrollCtrl = new ScrollCtrl(this.$api)
-    this.mandCtxt = this.$store.getters['ctxtStore/get']
+    this.mandCtxt = this.$store.state.user
     this.scrollRequestData.scrollBO = this.scrolldefinition.scrollBO
     this.scrollRequestData.scrollID = this.scrolldefinition.scrollID
     this.scrollRequestData.appfilter = this.scrolldefinition.appfilter

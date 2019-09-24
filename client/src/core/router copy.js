@@ -17,6 +17,7 @@ const router = new Router({
       component: logon
     },
     {
+      
       path: '/menu',
       name: 'menu',
       component: () => import('@/modules/menu/views/Menu.vue'),

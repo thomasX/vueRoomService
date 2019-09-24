@@ -63,6 +63,9 @@ export default {
     async checkActiveAdminUsers () {
       const response = await AuthenticationService.activeAdminUserExists()
       this.$store.dispatch('setActiveAdminUserExists',response.data)
+    },
+    getHeight () {
+      return this.$refs.header.height
     }
   },
   async beforeMount () {

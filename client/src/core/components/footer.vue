@@ -1,5 +1,5 @@
 <template>
-  <v-footer :absolute="absolute" :fixed="!absolute" dark color="primary" height="100">
+  <v-footer ref="footer" :absolute="absolute" :fixed="!absolute" dark color="primary" height="100">
     <v-layout v-if="!isMobile" align-center justify-space-around>
       <div>
         <span v-for="action in actions" :key="action.name">
@@ -66,6 +66,9 @@ export default {
     }
   },
   methods: {
+    getHeight () {
+      return this.$refs.footer.height
+    },
     checkMobile: function () {
       if (window.innerWidth < 750) this.isMobile = true
       else this.isMobile = false

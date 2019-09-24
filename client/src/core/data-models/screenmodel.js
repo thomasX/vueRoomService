@@ -6,7 +6,8 @@ export default class Screenmodel {
     } catch {
       //console.log('invalidScreenmodel')
     }
-    if ((this.translationMap === undefined) || (this.translationMap === null)) this.translationMap = { title: 'FERPS-VUE' }
+    const appTitle = process.env.VUE_APP_TITLE
+    if ((this.translationMap === undefined) || (this.translationMap === null)) this.translationMap = { title: appTitle }
     this.untranslatedMap = {}
   }
   translate (untranslatedKey) {

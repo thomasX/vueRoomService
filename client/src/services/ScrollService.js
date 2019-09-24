@@ -2,6 +2,10 @@ import Api from '@/services/Api'
 import ScrollModel from '@/core/data-models/scrollmodel'
 
 export default {
+
+  testmethod () {
+    console.log('testmethode')
+  },
   async getScrollModel (userCtxt, scrollRequest, screenmodel, startLine) {
     try {
       const params = {
