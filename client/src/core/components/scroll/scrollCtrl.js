@@ -5,13 +5,16 @@ export default class scrollCtrl {
   }
   async getScrollModel (userCtxt, scrollRequest, screenmodel, startLine) {
     console.log('jetzt wird ein scrollmodel angeforder: ')
-    console.log(userCtxt) ... da liegt der fehler
+    console.log(userCtxt)
     console.log(scrollRequest)
     console.log(screenmodel)
     console.log(startLine)
-    const aaa = ScrollService.testmethod()
-    console.log(aaa)
-    const result = await ScrollService.getScrollModel(userCtxt, scrollRequest, screenmodel, startLine)
+    let result = undefined
+    try {
+      result = await ScrollService.getScrollModel(userCtxt, scrollRequest, screenmodel, startLine)
+    } catch (error) {
+      console.log('error:' + error)
+    }
     console.log(result)
     console.log('scrollresult')
     return result

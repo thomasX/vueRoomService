@@ -37,5 +37,10 @@ export default new Vuex.Store({
     setActiveAdminUserExists ({commit}, value) {
       commit('setActiveAdminUserExists', value)
     }
+  },
+  getters:  {
+    getUser: (state) => state.user,
+    getToken: (state) => state.token,
+    getActiveAdminUserExists: (state) => state.activeAdminUsers
   }
 })

@@ -3,17 +3,15 @@ import ScrollModel from '@/core/data-models/scrollmodel'
 
 export default {
 
-  testmethod () {
-    console.log('testmethode')
-  },
   async getScrollModel (userCtxt, scrollRequest, screenmodel, startLine) {
     try {
       const params = {
-          mail: userCtxt.email,
+          email: userCtxt.email,
           scrollRequest: scrollRequest
       }
       if (startLine !== undefined) params.scrollRequest.start = startLine
-      const scrollResponse = await Api().get(`/Scroll/getScrollModel`)
+      const scrollResponse = await Api().get(`/Scroll/getScrollModel`,params)
+      console.log(scrollResponse)
       return new ScrollModel(scrollResponse, screenmodel)
     } catch (error) {
       alert(JSON.stringify(error));
