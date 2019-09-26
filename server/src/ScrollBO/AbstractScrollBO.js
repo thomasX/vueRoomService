@@ -6,6 +6,7 @@ module.exports = (db) => class AbstractScrollBO {
   async collectLines (scrollBO, scrollrequest, userCtxt) {
     let startingLine = scrollrequest.start
     const forward = scrollrequest.direction
+    console.log('Ahaaaaaa:' + scrollrequest)
     const result = { firstDataReached: false, lastDataReached: false, lines: [] }
     if (forward) {
       if ((startingLine === undefined) || (startingLine === null)) {
@@ -76,6 +77,7 @@ module.exports = (db) => class AbstractScrollBO {
   }
 
   getScrollModel (scrollBO, scrollrequest, userCtxt) {
+    console.log('#ä############ ' + scrollrequest)
     const lines = this.collectLines(scrollBO, scrollrequest, userCtxt)
     return lines
   }

@@ -13,7 +13,7 @@ export default {
       }      
       config.params = params
       if (startLine !== undefined) params.scrollRequest.start = startLine
-      const scrollResponse = await Api().get('/Scroll/getScrollModel',params)
+      const scrollResponse = await Api().get('/Scroll/getScrollModel',config)
       console.log(scrollResponse)
       return new ScrollModel(scrollResponse, screenmodel)
     } catch (error) {
