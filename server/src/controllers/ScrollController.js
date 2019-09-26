@@ -7,6 +7,7 @@ module.exports = {
   async getScrollModel (req, res) {
     const { email, scrollrequest } = req.body
     let result = null
+    let status = 200
     try {
       const user = await User.findOne({
         where: {
@@ -18,8 +19,9 @@ module.exports = {
       result = abstractScrollBO.getScrollModel(scrollBO, scrollrequest, user)
     } catch (error) {
       console.log(req)
-      res.status(500).send('error:' + error)
+      result = 'error:' + error
+      status = 500
     }
-    res.send(result)
+    res.status(status).send(result)
   }
 }
