@@ -59,6 +59,7 @@ export default {
   async beforeMount () {
     this.userscrollService = new UserScrollService(this.$api)
     this.user = this.$store.getters['getUser']
+    console.log(this.user)
     this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserScroll_Main',this.user.language)
     this.ready = true
   }

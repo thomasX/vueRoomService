@@ -5,10 +5,11 @@ const { User } = require('../models')
 
 module.exports = {
   async getScrollModel (req, res) {
-    const { email, scrollrequest } = req.body
-    let result = null
+    const email = req.query.email
+    const scrollrequest = req.query.scrollRequest
     let status = 200
-    console.log('###############################' + email + ' ' + JSON.stringify(req.body))
+    let result
+    console.log('###############################email und body ' + email + ' ' + scrollrequest)
     try {
       const user = await User.findOne({
         where: {
