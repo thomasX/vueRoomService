@@ -4,6 +4,7 @@ const ScrollBObyName = {
 }
 module.exports = class ScrollBoFactory {
   createInstance (name) {
-    return new ScrollBObyName[name]()
+    console.log('##############' + name)
+    return ScrollBObyName[name]
   }
 }

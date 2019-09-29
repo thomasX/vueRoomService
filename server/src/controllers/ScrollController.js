@@ -9,17 +9,20 @@ module.exports = {
     const scrollrequest = req.query.scrollRequest
     let status = 200
     let result
-    console.log('###############################email und body ' + email + ' ' + scrollrequest)
+    console.log('###############################email und body ' + email + ' ' + scrollrequest
+    )
     try {
       const user = await User.findOne({
         where: {
           email: email
         }
       })
-      console.log('nsch sear ')
-      const scrollBO = ScrollBoFactory.createInstance(scrollrequest.scrollBO)
+      console.log('#######' + JSON.stringify(user) + 'scrollBO ' + scrollrequest.scrollBO)
+      const scrollBO = new ScrollBoFactory().createInstance(scrollrequest.scrollBO)
+      console.log('########### result' + scrollBO + '   ' + scrollrequest.scrollBO)
       const abstractScrollBO = new AbstractScrollBO(this.db)
       result = abstractScrollBO.getScrollModel(scrollBO, scrollrequest, user)
+      console.log(result)
     } catch (error) {
       console.log(req.body)
       result = 'error:' + error
