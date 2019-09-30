@@ -12,7 +12,7 @@ export default class scrollCtrl {
     let result = undefined
     try {
       result = await ScrollService.getScrollModel(userCtxt, scrollRequest, screenmodel, startLine)
-      alert(result)
+      console.log('response: ' + JSON.stringify(result))
     } catch (error) {
       alert(error)
     }

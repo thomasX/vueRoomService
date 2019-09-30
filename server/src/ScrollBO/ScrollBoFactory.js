@@ -3,8 +3,10 @@ const ScrollBObyName = {
   // ...
 }
 module.exports = class ScrollBoFactory {
-  createInstance (name) {
-    console.log('##############' + name)
-    return ScrollBObyName[name]
+  createInstance (name, sortcol) {
+    const ScrollBoClass = ScrollBObyName[name]
+    const scrollbo = new ScrollBoClass()
+    scrollbo.pers = scrollbo.createScrollPersistency(sortcol)
+    return scrollbo
   }
 }

@@ -1,9 +1,15 @@
 const ScrollPersistency = {
   email: require('./UserScrollPersistencyEMAIL')
 }
-module.exports = (db) => class UserScrollBO {
+
+module.exports = class UserScrollBO {
+  constructor () {
+    this.modelName = 'User'
+  }
+
   createScrollPersistency (sortCol) {
-    this.pers = new ScrollPersistency[sortCol]()
-    this.pers.model = db.models.User
+    const PersClass = ScrollPersistency[sortCol]
+    const pers = new PersClass()
+    return pers
   }
 }

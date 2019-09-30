@@ -30,9 +30,8 @@ export default class Api {
     }
     if (params !== undefined) config.params = params
     const servicePath = (pathPrefix === undefined) ? (this.pathPrefix + service) : (pathPrefix + service)
-    console.log('servicePath:' + servicePath)
     const response = await axios.get(servicePath, config).catch(error => {
-      console.log('Error: /n' + JSON.stringify(error))
+      consol.error('Error: /n' + JSON.stringify(error))
     })
     let result = response
     return result
@@ -57,13 +56,14 @@ export default class Api {
   async put (service, params, data) {
     const config = {
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
       }
     }
     if (params !== undefined) config.params = params
-    const servicePath = this.pathPrefix + service
+    const servicePath = this.pathPrefix + service    
     let response = await axios.put(servicePath, data, config).catch(error => {
-      console.log('Error: /n' + JSON.stringify(error))
+      console.error('Error: /n' + JSON.stringify(error))
     })
     return response
   }
@@ -72,13 +72,12 @@ export default class Api {
   //   const token = this.keycloak.token
   //   const config = {
   //     headers: {
-  //       'Authorization': ('Bearer ' + token),
-  //       'Access-Control-Allow-Origin': '*'
+            // "Accept": "application/json",
+            // "Content-type": "application/json"
   //     }
   //   }
   //   if (params !== undefined) config.params = params
   //   const servicePath = this.pathPrefix + service
-  //   let response = await axios.put(servicePath, data, config).catch(error => {
   //     console.log('Error: /n' + JSON.stringify(error))
   //   })
   //   return response
@@ -87,13 +86,14 @@ export default class Api {
   async post (service, params, data) {
     const config = {
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        'Accept': "application/json",
+        'Content-type': "application/json"
       }
     }
     if (params !== undefined) config.params = params
     const servicePath = this.pathPrefix + service
-    let response = await axios.put(servicePath, data, config).catch(error => {
-      console.log('Error: /n' + JSON.stringify(error))
+    let response = await axios.post(servicePath, data, config).catch(error => {
+      console.error('Error: /n' + JSON.stringify(error))
     })
     return response
   }

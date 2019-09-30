@@ -10,7 +10,6 @@ import DataScroll from '@/core/components/scroll/datascroll'
 import ScreenmodelService from '@/services/ScreenmodelService'
 
 // import TransportFinishingDialog from '@/modules/transport/dialogs/TransportFinishingDialog.vue'
-import UserScrollService from '@/modules/Usermaintenance/userscrollService'
 
 export default {
   name: 'UserScroll_Main',
@@ -28,7 +27,7 @@ export default {
       scrolldefinition: {
         scrollBO: 'UserScrollBO',
         scrollID: 'vue_Userscroll_Main',
-        curSort: 'EMAIL'
+        curSort: 'email'
       },
       extendedscrollactions: [
         {
@@ -57,9 +56,7 @@ export default {
     }
   },
   async beforeMount () {
-    this.userscrollService = new UserScrollService(this.$api)
     this.user = this.$store.getters['getUser']
-    console.log(this.user)
     this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserScroll_Main',this.user.language)
     this.ready = true
   }

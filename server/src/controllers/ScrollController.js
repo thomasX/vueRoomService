@@ -1,37 +1,29 @@
 const AbstractScrollBO = require('../ScrollBO/AbstractScrollBO')
 const ScrollBoFactory = require('../ScrollBO/ScrollBoFactory')
-
-const { User } = require('../models')
+const db = require('../models/index')
+// const { User } = require('../models')
 
 module.exports = {
-  async getScrollModel (req, res) {
-    console.log('hhh####################################################################')
-    const email = req.query.email
-    const scrollrequest = req.query.scrollRequest
+  async getScrollModel (req, res, app) {
     const body = req.body
-    console.log('  ################ body:')
-    console.log(body)
     let status = 200
     let result
-    console.log('###############################email und body ' + email + ' ' + scrollrequest
-    )
+
     try {
-      const user = await User.findOne({
+      const user = await db['User'].findOne({
         where: {
-          email: email
+          email: body.email
         }
       })
-      console.log('#######' + JSON.stringify(user) + 'scrollBO ' + scrollrequest.scrollBO)
-      const scrollBO = new ScrollBoFactory().createInstance(scrollrequest.scrollBO)
-      console.log('########### result' + scrollBO + '   ' + scrollrequest.scrollBO)
-      const abstractScrollBO = new AbstractScrollBO(this.db)
-      result = abstractScrollBO.getScrollModel(scrollBO, scrollrequest, user)
-      console.log(result)
+      const scrollBO = new ScrollBoFactory().createInstance(body.scrollRequest.scrollBO, body.scrollRequest.sort)
+      const abstractScrollBO = new AbstractScrollBO(db)
+      result = await abstractScrollBO.getScrollModel(scrollBO, body.scrollRequest, user)
+      console.log('########### RESULT: ' + JSON.stringify(result))
     } catch (error) {
-      console.log(req.body)
       result = 'error:' + error
       status = 500
     }
+    console.log('status' + status + '   result:' + JSON.stringify(result))
     res.status(status).send(result)
   }
 }
