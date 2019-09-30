@@ -5,8 +5,12 @@ const { User } = require('../models')
 
 module.exports = {
   async getScrollModel (req, res) {
+    console.log('hhh####################################################################')
     const email = req.query.email
     const scrollrequest = req.query.scrollRequest
+    const body = req.body
+    console.log('  ################ body:')
+    console.log(body)
     let status = 200
     let result
     console.log('###############################email und body ' + email + ' ' + scrollrequest

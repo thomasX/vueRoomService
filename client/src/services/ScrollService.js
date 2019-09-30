@@ -9,13 +9,14 @@ export default {
         email: userCtxt.email,
         scrollRequest: scrollRequest
       }      
-      console.log(params)
+      alert('################### params')
+      alert(JSON.stringify(params))
       if (startLine !== undefined) params.scrollRequest.start = startLine
-      const scrollResponse = await Api().get('/Scroll/getScrollModel',{ params: params })
-      console.log(scrollResponse)
+      const scrollResponse = await new Api().put('/Scroll/ScrollModel', params )
+      alert('response:' + JSON.stringify(scrollResponse))
       return new ScrollModel(scrollResponse, screenmodel)
     } catch (error) {
-      alert(JSON.stringify(error));
+      alert('error ################:' + JSON.stringify(error));
     }
   }
 

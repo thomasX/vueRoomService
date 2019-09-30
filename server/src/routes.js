@@ -12,5 +12,5 @@ module.exports = (app) => {
 
   app.get('/User/activeAdminUserExists', AuthenticationController.activeAdminUserExists)
 
-  app.get('/Scroll/getScrollModel', scrollCtrl.getScrollModel)
+  app.put('/Scroll/ScrollModel', scrollCtrl.getScrollModel)
 }

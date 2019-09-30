@@ -8,7 +8,7 @@ export default {
       const withTranslations = process.env.VUE_APP_ROOMSERVICE_TRANSLATION_ACTIV
       let screenmodelResponse ={data: ''}
       if (withTranslations === true) {
-        screenmodelResponse = await Api().get(`Screenmodel/${screenId}/${language}`)
+        screenmodelResponse = await new Api().get(`Screenmodel/${screenId}/${language}`)
       }
       return new Screenmodel(screenId, screenmodelResponse.data)
     } catch {
