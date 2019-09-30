@@ -5,6 +5,7 @@ const ScrollPersistency = {
 module.exports = class UserScrollBO {
   constructor () {
     this.modelName = 'User'
+    this.scrollableColumns = Object.keys(ScrollPersistency)
   }
 
   createScrollPersistency (sortCol) {

@@ -1,7 +1,7 @@
 import Screenmodel from '@/core/data-models/screenmodel'
 export default class ScrollModel {
   constructor (rawdata, screenmodel) {
-    console.log('rawData:' + JSON.stringify(rawdata))
+    console.log('#######   rawData:' + JSON.stringify(rawdata))
     const result = rawdata.data
     this.screenID = result.scrollModel.CurScreenID
     this.lines = result.scrollModel.CurScrollDTO.LineCollection

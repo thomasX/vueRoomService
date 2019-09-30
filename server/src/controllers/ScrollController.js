@@ -18,6 +18,13 @@ module.exports = {
       const scrollBO = new ScrollBoFactory().createInstance(body.scrollRequest.scrollBO, body.scrollRequest.sort)
       const abstractScrollBO = new AbstractScrollBO(db)
       result = await abstractScrollBO.getScrollModel(scrollBO, body.scrollRequest, user)
+      result.scrollModel = { CurScreenID: body.scrollRequest.scrollBO }
+      result.scrollboClassName = scrollRequest.scrollBO
+      result.scrollModel.CurSortCol = scrollBO.scrollableColumns
+      result.scrollModel.CurSort = body.scrollRequest.sort
+      result.getScrollModel.CurScrollDTO = { NameCollection: ...result.}
+
+
       console.log('########### RESULT: ' + JSON.stringify(result))
     } catch (error) {
       result = 'error:' + error
