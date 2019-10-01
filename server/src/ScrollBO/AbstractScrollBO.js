@@ -5,23 +5,25 @@ module.exports = class AbstractScrollBO {
 
   async collectLines (scrollBO, scrollrequest, userCtxt) {
     let startingLine = scrollrequest.start
+    console.log(startingLine)
     const forward = scrollrequest.direction
-    const result = { firstDataReached: false, lastDataReached: false, lines: [] }
+    const result = { firstDataReached: false, lastDataReached: false, createdWithBackwardDirection: false, lines: [] }
     if (forward) {
       if ((startingLine === undefined) || (startingLine === null)) {
         result.firstDataReached = true
         const response = await this.findFirst(scrollBO, scrollrequest, userCtxt)
         startingLine = response[0]
       }
-      if ((startingLine !== undefined) || (startingLine === null)) {
+      if ((startingLine !== undefined) && (startingLine !== null)) {
         result.lines = await this.findForward(scrollBO, scrollrequest, userCtxt, startingLine)
       }
-      if ((result === undefined) || (result.lines.length < 0)) {
+      if ((result === undefined) || (result === null) || (result.lines.length < 0)) {
         result.lastDataReached = true
         const response = await this.findLast(scrollBO, scrollrequest, userCtxt)
         startingLine = response[0]
-        if ((startingLine === undefined) || (startingLine === null)) {
+        if ((startingLine !== undefined) && (startingLine !== null)) {
           result.lines = await this.findBackward(scrollBO, scrollrequest, userCtxt, startingLine)
+          result.createdWithBackwardDirection = true
         }
       }
     } else {
@@ -30,18 +32,22 @@ module.exports = class AbstractScrollBO {
         const response = await this.findLast(scrollBO, scrollrequest, userCtxt)
         startingLine = response[0]
       }
-      if ((startingLine !== undefined) || (startingLine === null)) {
+      if ((startingLine !== undefined) && (startingLine !== null)) {
         result.lines = await this.findBackward(scrollBO, scrollrequest, userCtxt, startingLine)
+        result.createdWithBackwardDirection = true
       }
-      if ((result === undefined) || (result.lines.length < 0)) {
+      if ((result === undefined) || (result === null) || (result.lines.length < 0)) {
         result.firstDataReached = true
         const response = await this.findFirst(scrollBO, scrollrequest, userCtxt)
         startingLine = response[0]
-        if ((startingLine === undefined) || (startingLine === null)) {
+        if ((startingLine !== undefined) && (startingLine !== null)) {
           result.lines = await this.findForward(scrollBO, scrollrequest, userCtxt, startingLine)
+          result.createdWithBackwardDirection = false
         }
       }
     }
+    if ((forward) && (result.lines.length < scrollrequest.rows)) result.lastDataReached = true
+    if ((!forward) && (result.lines.length > scrollrequest.rows)) result.firstDataReached = true
     return result
   }
 

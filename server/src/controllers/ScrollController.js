@@ -19,8 +19,8 @@ module.exports = {
       const abstractScrollBO = new AbstractScrollBO(db)
       const scrollRequest = body.scrollRequest
       const response = await abstractScrollBO.getScrollModel(scrollBO, scrollRequest, user)
-      console.log('###########' + JSON.stringify(response))
       result.rawdata = response
+      if (result.rawdata.createdWithBackwardDirection === true) result.rawdata.lines = result.rawdata.lines.reverse()
       result.scrollModel = { CurScreenID: scrollRequest.scrollBO }
       result.scrollboClassName = scrollRequest.scrollBO
       result.scrollModel.CurSortCol = scrollBO.scrollableColumns

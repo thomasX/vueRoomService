@@ -1,6 +1,6 @@
 module.exports = class UserScrollPersistencyEMAIL {
   createFirstStatement (filter) {
-    let statement = 'select * from Users where 1 = 1 #filter# order by email asc Limit #rows# '
+    let statement = 'select * from Users where 1 = 1 #filter# order by email asc, id asc Limit #rows# '
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, 1)
@@ -9,7 +9,7 @@ module.exports = class UserScrollPersistencyEMAIL {
   }
 
   createLastStatement (filter) {
-    let statement = 'select * from Users where 1 = 1 #filter# order by email desc Limit #rows# '
+    let statement = 'select * from Users where 1 = 1 #filter# order by email desc, id desc Limit #rows# '
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, 1)
@@ -18,14 +18,14 @@ module.exports = class UserScrollPersistencyEMAIL {
   }
 
   createForwardStatement (start, filter, rows) {
-    console.log('start:' + JSON.stringify(start))
-    let statement = 'select * from Users where id >= ? #filter# order by email asc Limit #rows# '
+    let statement = 'select * from Users where ((email = ? AND id >= ?) OR (email > ?)) #filter# order by email asc, id asc Limit #rows# '
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, rows)
     console.log('forwardStatement: ' + statement + '### rows:' + rows)
-    const startcol = this.extractColumnValue(start['id'])
-    return { statement: statement, replacements: [startcol] }
+    const startmail = this.extractColumnValue(start['email'])
+    const startid = this.extractColumnValue(start['id'])
+    return { statement: statement, replacements: [startmail, startid, startmail] }
   }
 
   extractColumnValue (column) {
@@ -33,14 +33,14 @@ module.exports = class UserScrollPersistencyEMAIL {
   }
 
   createBackwardStatement (start, filter, rows) {
-    console.log('start:' + JSON.stringify(start))
-    let statement = 'select * from Users where id <= ? #filter# order by email desc Limit #rows# '
+    let statement = 'select * from Users where ((email = ? AND id <= ?)  OR (email < ?)) #filter# order by email desc, id desc Limit #rows# '
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, rows)
     console.log('backwardStatement: ' + statement)
-    const startcol = this.extractColumnValue(start['id'])
-    return { statement: statement, replacements: [startcol] }
+    const startmail = this.extractColumnValue(start['email'])
+    const startid = this.extractColumnValue(start['id'])
+    return { statement: statement, replacements: [startmail, startid, startmail] }
   }
 
   createFilterstatement (filter) {
