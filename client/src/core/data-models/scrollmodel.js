@@ -8,6 +8,8 @@ export default class ScrollModel {
     this.orgHeaders = result.scrollModel.CurScrollDTO.NameCollection
     this.scrollBO = result.scrollboClassName
     this.sortable = result.scrollModel.CurSortCol
+    this.lastDataReached = result.scrollModel.CurScrollDTO.lastDataReached
+    this.firstDataReached = result.scrollModel.CurScrollDTO.firstDataReached
     this.pagination = {
       sortBy: result.scrollModel.CurSort
     }

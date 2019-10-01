@@ -5,7 +5,7 @@ module.exports = class UserScrollPersistencyEMAIL {
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, 1)
     console.log('firstStatement: ' + statement)
-    return statement
+    return { statement: statement, replacements: [] }
   }
 
   createLastStatement (filter) {
@@ -14,25 +14,33 @@ module.exports = class UserScrollPersistencyEMAIL {
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, 1)
     console.log('lastStatement: ' + statement)
-    return statement
+    return { statement: statement, replacements: [] }
   }
 
   createForwardStatement (start, filter, rows) {
-    let statement = 'select * from Users where 1 = 1 #filter# order by email asc Limit #rows# '
+    console.log('start:' + JSON.stringify(start))
+    let statement = 'select * from Users where id >= ? #filter# order by email asc Limit #rows# '
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, rows)
     console.log('forwardStatement: ' + statement + '### rows:' + rows)
-    return statement
+    const startcol = this.extractColumnValue(start['id'])
+    return { statement: statement, replacements: [startcol] }
+  }
+
+  extractColumnValue (column) {
+    return (column['#val#'] !== undefined) ? column['#val#'] : column
   }
 
   createBackwardStatement (start, filter, rows) {
-    let statement = 'select * from Users where 1 = 1 #filter# order by email desc Limit #rows# '
+    console.log('start:' + JSON.stringify(start))
+    let statement = 'select * from Users where id <= ? #filter# order by email desc Limit #rows# '
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, rows)
     console.log('backwardStatement: ' + statement)
-    return statement
+    const startcol = this.extractColumnValue(start['id'])
+    return { statement: statement, replacements: [startcol] }
   }
 
   createFilterstatement (filter) {

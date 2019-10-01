@@ -9,5 +9,4 @@ module.exports = class ScrollBoFactory {
     scrollbo.pers = scrollbo.createScrollPersistency(sortcol)
     return scrollbo
   }
-
 }

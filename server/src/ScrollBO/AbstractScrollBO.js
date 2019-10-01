@@ -4,25 +4,22 @@ module.exports = class AbstractScrollBO {
   }
 
   async collectLines (scrollBO, scrollrequest, userCtxt) {
-    console.log('############# BIN IM collectlines')
     let startingLine = scrollrequest.start
     const forward = scrollrequest.direction
-    console.log('##############Ahaaaaaa:' + JSON.stringify(scrollrequest))
     const result = { firstDataReached: false, lastDataReached: false, lines: [] }
     if (forward) {
       if ((startingLine === undefined) || (startingLine === null)) {
         result.firstDataReached = true
-        startingLine = await this.findFirst(scrollBO, scrollrequest, userCtxt)
-        console.log('firstLine gefunden:' + startingLine)
+        const response = await this.findFirst(scrollBO, scrollrequest, userCtxt)
+        startingLine = response[0]
       }
       if ((startingLine !== undefined) || (startingLine === null)) {
-        console.log('######################### suche forward')
         result.lines = await this.findForward(scrollBO, scrollrequest, userCtxt, startingLine)
-        console.log('forward gefunden:' + result.lines)
       }
       if ((result === undefined) || (result.lines.length < 0)) {
         result.lastDataReached = true
-        startingLine = await this.findLast(scrollBO, scrollrequest, userCtxt)
+        const response = await this.findLast(scrollBO, scrollrequest, userCtxt)
+        startingLine = response[0]
         if ((startingLine === undefined) || (startingLine === null)) {
           result.lines = await this.findBackward(scrollBO, scrollrequest, userCtxt, startingLine)
         }
@@ -30,14 +27,16 @@ module.exports = class AbstractScrollBO {
     } else {
       if ((startingLine === undefined) || (startingLine === null)) {
         result.lastDataReached = true
-        startingLine = await this.findLast(scrollBO, scrollrequest, userCtxt)
+        const response = await this.findLast(scrollBO, scrollrequest, userCtxt)
+        startingLine = response[0]
       }
       if ((startingLine !== undefined) || (startingLine === null)) {
         result.lines = await this.findBackward(scrollBO, scrollrequest, userCtxt, startingLine)
       }
       if ((result === undefined) || (result.lines.length < 0)) {
         result.firstDataReached = true
-        startingLine = await this.findFirst(scrollBO, scrollrequest, userCtxt)
+        const response = await this.findFirst(scrollBO, scrollrequest, userCtxt)
+        startingLine = response[0]
         if ((startingLine === undefined) || (startingLine === null)) {
           result.lines = await this.findForward(scrollBO, scrollrequest, userCtxt, startingLine)
         }
@@ -59,9 +58,7 @@ module.exports = class AbstractScrollBO {
   }
 
   async findForward (scrollBO, scrollrequest, userCtxt, startingLine) {
-    console.log('SCROLLREQUEST: ' + JSON.stringify(scrollrequest) + '############### rows: ' + scrollrequest.rows)
     const realStatement = scrollBO.pers.createForwardStatement(startingLine, scrollrequest.filter, scrollrequest.rows)
-    console.log(' ####### forwardStatement:' + realStatement)
     const forwardResult = await this.find(scrollBO, scrollrequest, userCtxt, realStatement)
     return forwardResult
   }
@@ -73,16 +70,11 @@ module.exports = class AbstractScrollBO {
   }
 
   async find (scrollBO, scrollrequest, userCtxt, realStatement) {
-    console.log('bin im find:')
-    console.log('bin im find: ' + realStatement + '  _____   ' + scrollBO.modelName + '     db:' + this.db)
-    const queryResult = await this.db.sequelize.query(realStatement, { model: this.db[scrollBO.modelName], mapToModel: true })
-    console.log('################# und da????' + JSON.stringify(queryResult))
+    const queryResult = await this.db.sequelize.query(realStatement.statement, { model: this.db[scrollBO.modelName], mapToModel: true, replacements: realStatement.replacements })
     return queryResult
   }
 
   async getScrollModel (scrollBO, scrollrequest, userCtxt) {
-    console.log('################# bin im Abstractscrollbo.colletlines...')
-    console.log('#ä############ ' + scrollrequest)
     const lines = this.collectLines(scrollBO, scrollrequest, userCtxt)
     return lines
   }
