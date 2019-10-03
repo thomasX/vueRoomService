@@ -19,7 +19,7 @@ export default {
   data () {
     return {
       ready: false,
-      lastrefreshRequest: '',
+      lastrefreshRequest: { lastrefresh: new Date().toISOString() },
       //callbackTransportFinishingDlg: 'actionCloseTransportFinishingDialog',
       editDialogOpened: false,
       dataModel: {},

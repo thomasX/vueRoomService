@@ -6,7 +6,7 @@
         <template v-if="!isMobile" v-slot:header="props">
           <thead fixed-header ref="dataTableFixedHeader">
             <tr>
-              <th v-for="header in computedHeaders" :key=header.value @click="changeSort(header.value)">
+              <th v-for="header in computedHeaders" :key=header.value @click="changeSort(header)">
                 <span :style="getHeaderStyle(header)"> {{ header.text }} </span>
                 <v-icon v-if="header.searchable" :style="getHeaderStyle(header)" small>mdi-menu-down</v-icon>
               </th>
@@ -31,7 +31,7 @@
           <tr v-else v-touch:swipe="processSwipeEvent" @click="handleClick(props.item)" v-touch:tap="(e) => processTapEvent(e, props.item)">
             <td :ref="'refItem_line_' + props.item.linenumber" :style="getStyle(props.item)">
               <ul class="flex-content">
-                <li :style="getMobileStyle(props.item, header)" v-for="header in computedHeaders" :key="header.value" :data-label="header.text">
+                <li :style="getMobileStyle(props.item[header.value]['#bg#'])" v-for="header in computedHeaders" :key="header.value" :data-label="header.text">
                   <v-edit-dialog :ref="('editDlg_' + props.item.linenumber + '_' + header.value)" v-if="(header.searchable && (props.item === curLine))" lazy @save="saveSearch(props.item, header.value, props.item[header.value]['#val#'])" @open="openSearch" @close="closeSearch">
                     {{ props.item[header.value]['#val#'] }}
                     <template v-slot:input>
@@ -72,7 +72,7 @@ export default {
     toolBoxActions: Array,
     lineCount: Number,
     lineFactor: Number,
-    lastrefreshRequest: Object
+    lastrefreshRequest: String
   },
   data () {
     return {
@@ -124,13 +124,7 @@ export default {
   },
   watch: {
     async lastrefreshRequest () {
-      const first = ((this.lastrefreshRequest !== undefined) && (this.lastrefreshRequest.firstPage))
-      const last = ((this.lastrefreshRequest !== undefined) && (this.lastrefreshRequest.lastPage) && (!first))
-      if ((!last) && (!first)) {
-        await this.pgDown(this.curLine.linenumber)
-      }
-      if (first) await this.first()
-      if (last) await this.last()
+      await this.pgDown(this.curLine.linenumber)
     }
   },
   computed: {
@@ -166,17 +160,15 @@ export default {
     getHeight () {
       let headerHeight = this.$root.$children[0].$refs.appHeader.getHeight()
       let footerHeight = (this.$refs.dateTableFixedFooter) ? this.$refs.dateTableFixedFooter.getHeight() : 0
-      const browserBarHeight = (this.isMobile) ? 50 : 0
-      let height = parseInt(headerHeight) + parseInt(footerHeight) + parseInt(browserBarHeight)
+      let height = parseInt(headerHeight) + parseInt(footerHeight)
       return 'calc(100vh - ' + height + 'px)'
     },
-    getMobileStyle (item, header) {
+    getMobileStyle (bgColor) {
       let calculatedWidth = parseInt(100 / this.computedHeaders.length)
       if (calculatedWidth <= 25) calculatedWidth = 25
       return {
-        'border-left': '5px solid #' + item[header.value]['#bg#'],
+        'border-left': '5px solid #' + bgColor,
         width: calculatedWidth + '%',
-        padding: '3px',
         overflow: 'hidden'
       }
     },
@@ -293,7 +285,6 @@ export default {
     },
     processKeyEvent (event) {
       let used = false
-      if (event.keyCode === 118) { this.changeToNextSort(); used = true }
       if ((event.keyCode === 70) && event.ctrlKey) { this.openSearchBox(); used = true }
       if ((event.keyCode === 27) && (this.$route.path !== '/menu')) { this.$router.push('/menu'); used = true }
       if (event.keyCode === 113) { this.handleEvent('BtnEdit'); used = true }
@@ -425,21 +416,17 @@ export default {
       alert('Help not yet implemented!')
     },
     async pgUp () {
-      if (this.model.firstDataReached) {
-        await this.first()
-      } else {
-        this.loading = true
-        let startLine
-        try {
-          startLine = this.model.lines[0]
-        } catch {}
-        const scrollRequest = this.generateScrollRequest(false)
-        this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel, startLine)
-        this.curLine = (undefined !== this.model.lines) ? this.model.lines[this.model.lines.length - 1] : undefined
-        this.loading = false
-        this.dataTable.scrollTop = Number.MAX_SAFE_INTEGER
-        this.requestFocus()
-      }
+      this.loading = true
+      let startLine
+      try {
+        startLine = this.model.lines[0]
+      } catch {}
+      const scrollRequest = this.generateScrollRequest(false)
+      this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel, startLine)
+      this.curLine = (undefined !== this.model.lines) ? this.model.lines[this.model.lines.length - 1] : undefined
+      this.loading = false
+      this.dataTable.scrollTop = Number.MAX_SAFE_INTEGER
+      this.requestFocus()
     },
     nextPage () {
       const nextStartingPosition = this.getCachedStartingLine(true)
@@ -539,8 +526,6 @@ export default {
       this.requestFocus()
     },
     generateScrollRequest (forward) {
-      const refreshedAppfilter = this.refreshAppfilter(this)
-      if (refreshedAppfilter !== undefined) this.scrollRequestData.appfilter = refreshedAppfilter
       return {
         scrollBO: this.scrollRequestData.scrollBO,
         appfilter: this.scrollRequestData.appfilter,
@@ -549,9 +534,6 @@ export default {
         direction: forward,
         sort: this.scrollRequestData.curSort
       }
-    },
-    refreshAppfilter () {
-
     },
     calcLineCount () {
       let headerHeight = (this.isMobile) ? 50 : 75
@@ -583,29 +565,15 @@ export default {
       }
     },
     onResize () {
+      // FIXME this.scrollRequestData.mobileSupported not used in CSS
       if (this.scrollRequestData.mobileSupported && (window.innerWidth < 750)) this.isMobile = true
       else this.isMobile = false
     },
-    changeToNextSort () {
-      let curSort = this.model.pagination.sortBy
-      let sortable = Object.values(this.model.sortable)
-      let index = sortable.indexOf(curSort)
-      let newSort
-      while (newSort === undefined) {
-        index = ((index + 1) < sortable.length) ? index + 1 : 0
-        let tmpSort = sortable[index]
-        if (tmpSort !== undefined) {
-          if ((undefined !== this.scrolldefinition.visibleCols) && (this.scrolldefinition.visibleCols.indexOf(tmpSort) > -1)) newSort = tmpSort
-          if (undefined === this.scrolldefinition.visibleCols) newSort = tmpSort
-        }
-      }
-      this.changeSort(newSort)
-    },
-    async changeSort (newSort) {
+    async changeSort (header) {
       this.loading = true
-      if (this.model.sortable[newSort] !== undefined) {
-        if (this.model.pagination.sortBy !== newSort) {
-          this.scrollRequestData.curSort = newSort
+      if (this.model.sortable[header.value] !== undefined) {
+        if (this.model.pagination.sortBy !== header.value) {
+          this.scrollRequestData.curSort = header.value
           await this.pgDown(this.curLine.linenumber)
         }
       }
@@ -618,12 +586,11 @@ export default {
   async beforeMount () {
     if (this.lineCount !== undefined) this.predefinedlineCount = this.lineCount
     this.scrollCtrl = new ScrollCtrl(this.$api)
-    this.mandCtxt = this.$store.getters['ctxtStore/get']
+    this.mandCtxt = this.$store.getters['getUser']
     this.scrollRequestData.scrollBO = this.scrolldefinition.scrollBO
     this.scrollRequestData.scrollID = this.scrolldefinition.scrollID
     this.scrollRequestData.appfilter = this.scrolldefinition.appfilter
     this.scrollRequestData.curSort = this.scrolldefinition.curSort
-    if (undefined !== this.scrolldefinition.mobileSupported) this.scrollRequestData.mobileSupported = this.scrolldefinition.mobileSupported
     if ((this.toolBoxActions !== undefined) && (this.toolBoxActions.length !== 0)) {
       this.actions.push({
         name: 'BtnToolBox',
@@ -687,7 +654,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-  overflow: hidden;
-  align-items: flex-start
+  overflow: hidden
 }
 </style>
