@@ -138,6 +138,7 @@ export default {
       let sortHeader
       let compHeaders = []
       let sortColIncluded = false
+      console.log('da bin ich' + JSON.stringify(this.model))
       if (this.model.headers !== undefined) {
         if ((this.scrolldefinition.visibleCols === undefined) || (this.scrolldefinition.visibleCols.length === 0)) compHeaders = Object.assign(compHeaders, this.model.headers)
         else {

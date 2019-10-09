@@ -17,7 +17,7 @@
       <v-spacer></v-spacer>
     <v-toolbar-items>
       <v-btn 
-        v-if="!$store.state.isUserLoggedIn"
+        v-if="!$store.getters['ctxtStore/getToken']"
         text 
         dark
         :to="{
@@ -26,7 +26,7 @@
         Login
       </v-btn>
       <v-btn 
-        v-if="registerAllowed"
+        v-if="((!$store.getters['ctxtStore/getToken']) && (!$store.getters['ctxtStore/getActiveAdminUserExists']))"
         text 
         dark
         :to="{
@@ -35,7 +35,7 @@
         Sign Up
       </v-btn>
       <v-btn 
-        v-if="$store.state.isUserLoggedIn"
+        v-if="$store.getters['ctxtStore/getToken']"
         text 
         dark
         @click="logout">
@@ -48,21 +48,22 @@
 <script>
 import AuthenticationService from '@/services/AuthenticationService'
 export default {
-  computed: {
+  methods: {
     registerAllowed: function () {
+      console.log('registerAllowd?? curUserAllowed:' + curUserAllowed + '   admin:' + JSON.stringify(this.$store.state)  )
       const curUserAllowed = (this.$store.state.isUserLoggedIn && this.$store.state.user.admin)
       const noAdminUserExists= (! this.$store.state.activeAdminUsers)
-      return (curUserAllowed || noAdminUserExists) 
-    }
-  },
-  methods: {
+      const result = (curUserAllowed || noAdminUserExists)
+      return result
+    },  
     logout () {
-      this.$store.dispatch('setToken', null)
-      this.$store.dispatch('setUser', null)
+      this.$store.dispatch('ctxtStore/setToken', null)
+      this.$store.dispatch('ctxtStore/set', null)
     },
     async checkActiveAdminUsers () {
       const response = await AuthenticationService.activeAdminUserExists()
-      this.$store.dispatch('setActiveAdminUserExists',response.data)
+      console.log('#################### checkActiveAdmin:'+ JSON.stringify(response.data) + '  .... ' + JSON.stringify(this.$store.state))
+      this.$store.dispatch('ctxtStore/setActiveAdminUserExists',response.data)
     },
     getHeight () {
       return this.$refs.header.height
@@ -70,6 +71,7 @@ export default {
   },
   async beforeMount () {
     await this.checkActiveAdminUsers();
+    console.log(JSON.stringify(this.$store.state))
   }
 }
 </script>

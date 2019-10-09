@@ -56,8 +56,9 @@ export default {
     }
   },
   async beforeMount () {
-    this.user = this.$store.getters['getUser']
-    this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserScroll_Main',this.user.language)
+    const user = this.$store.getters['ctxtStore/get']
+    console.log(JSON.stringify(user))
+    this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserScroll_Main',user.language)
     this.ready = true
   }
 }
