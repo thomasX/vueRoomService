@@ -17,7 +17,7 @@
         <!-- not mobile START -->
           <tr v-if="!isMobile" v-touch:swipe="processSwipeEvent" @click="handleClick(props.item)" v-touch:tap="(e) => processTapEvent(e, props.item)" >
             <td :ref="'refItem_line_' + props.item.linenumber" :style="getStyle(props.item, header.value)" @wheel="processWheelEvent" v-for="header in computedHeaders" :key="header.value">
-              <v-edit-dialog v-if="(header.searchable && scrollRequestData.searchSupported && (props.item === curLine))" :ref="('editDlg_' + props.item.linenumber + '_' + header.value)" @save="saveSearch(props.item, header.value, props.item[header.value]['#val#'])" @open="openSearch" @close="closeSearch" lazy>
+              <v-edit-dialog v-if="(header.searchable && (props.item === curLine))" :ref="('editDlg_' + props.item.linenumber + '_' + header.value)" @save="saveSearch(props.item, header.value, props.item[header.value]['#val#'])" @open="openSearch" @close="closeSearch" lazy>
                 {{ props.item[header.value]['#val#'] }}
                 <template v-slot:input>
                   <v-text-field @focus="(e) => e.target.select()" v-model="props.item[header.value]['#val#']" single-line/>
@@ -32,7 +32,7 @@
             <td :ref="'refItem_line_' + props.item.linenumber" :style="getStyle(props.item)">
               <ul class="flex-content">
                 <li :style="getMobileStyle(props.item, header)" v-for="header in computedHeaders" :key="header.value" :data-label="header.text">
-                  <v-edit-dialog :ref="('editDlg_' + props.item.linenumber + '_' + header.value)" v-if="(header.searchable && scrollRequestData.searchSupported && (props.item === curLine))" lazy @save="saveSearch(props.item, header.value, props.item[header.value]['#val#'])" @open="openSearch" @close="closeSearch">
+                  <v-edit-dialog :ref="('editDlg_' + props.item.linenumber + '_' + header.value)" v-if="(header.searchable && (props.item === curLine))" lazy @save="saveSearch(props.item, header.value, props.item[header.value]['#val#'])" @open="openSearch" @close="closeSearch">
                     {{ props.item[header.value]['#val#'] }}
                     <template v-slot:input>
                       <v-text-field @focus="(e) => e.target.select()" v-model="props.item[header.value]['#val#']" single-line/>
@@ -58,7 +58,6 @@ import Scrolldefinition from '@/core/data-models/scrolldefinition'
 import Footer from '@/core/components/footer'
 import ToolBox from '@/core/components/toolBox'
 import ScrollCtrl from '@/core/components/scroll/scrollCtrl'
-import KeyCodes from '@/core/data-models/keyCodes'
 
 export default {
   name: 'scrollContainer',
@@ -139,6 +138,7 @@ export default {
       let sortHeader
       let compHeaders = []
       let sortColIncluded = false
+      console.log('da bin ich' + JSON.stringify(this.model))
       if (this.model.headers !== undefined) {
         if ((this.scrolldefinition.visibleCols === undefined) || (this.scrolldefinition.visibleCols.length === 0)) compHeaders = Object.assign(compHeaders, this.model.headers)
         else {
@@ -294,16 +294,16 @@ export default {
     },
     processKeyEvent (event) {
       let used = false
-      if (event.keyCode === KeyCodes.VK_F7) { this.changeToNextSort(); used = true }
-      if ((event.keyCode === KeyCodes.VK_F) && event.ctrlKey) { this.openSearchBox(); used = true }
-      if ((event.keyCode === KeyCodes.VK_ESCAPE) && (this.$route.path !== '/menu')) { this.$router.push('/menu'); used = true }
-      if (event.keyCode === KeyCodes.VK_F2) { this.handleEvent('BtnEdit'); used = true }
-      if (event.keyCode === KeyCodes.VK_PAGE_DOWN) { this.nextPage(); used = true }
-      if (event.keyCode === KeyCodes.VK_PAGE_UP) { this.prevPage(); used = true }
-      if (event.keyCode === KeyCodes.VK_HOME) { this.first(); used = true }
-      if (event.keyCode === KeyCodes.VK_END) { this.last(); used = true }
-      if (event.keyCode === KeyCodes.VK_UP) { this.scrollUp(); used = true }
-      if (event.keyCode === KeyCodes.VK_DOWN) { this.scrollDown(); used = true }
+      if (event.keyCode === 118) { this.changeToNextSort(); used = true }
+      if ((event.keyCode === 70) && event.ctrlKey) { this.openSearchBox(); used = true }
+      if ((event.keyCode === 27) && (this.$route.path !== '/menu')) { this.$router.push('/menu'); used = true }
+      if (event.keyCode === 113) { this.handleEvent('BtnEdit'); used = true }
+      if (event.keyCode === 34) { this.nextPage(); used = true }
+      if (event.keyCode === 33) { this.prevPage(); used = true }
+      if (event.keyCode === 36) { this.first(); used = true }
+      if (event.keyCode === 35) { this.last(); used = true }
+      if (event.keyCode === 38) { this.scrollUp(); used = true }
+      if (event.keyCode === 40) { this.scrollDown(); used = true }
       return used
     },
     openSearchBox () {
@@ -438,7 +438,7 @@ export default {
         this.model = await this.scrollCtrl.getScrollModel(this.mandCtxt, scrollRequest, this.screenmodel, startLine)
         this.curLine = (undefined !== this.model.lines) ? this.model.lines[this.model.lines.length - 1] : undefined
         this.loading = false
-        this.$nextTick(function () { this.dataTable.scrollTop = Number.MAX_SAFE_INTEGER })
+        this.dataTable.scrollTop = Number.MAX_SAFE_INTEGER
         this.requestFocus()
       }
     },
@@ -614,16 +614,6 @@ export default {
     },
     openToolBox () {
       this.isToolBoxOpen = true
-    },
-    async selectInitialRow () {
-      const scrollConfig = this.lastrefreshRequest.scrollConfig
-      if ((this.curLine !== undefined) && (scrollConfig !== undefined)) {
-        const lineNumber = scrollConfig.lineNumber
-        const toolID = scrollConfig.toolID
-        if (lineNumber !== '') this.curLine = ((undefined !== this.model.lines[lineNumber]) && (toolID === this.model.lines[lineNumber].DFRECNUM['#val#'].toString())) ? this.model.lines[lineNumber] : this.curLine
-        let curLineProps = await this.calcLineProperties(this.$refs.scrollContainer, this.$refs['refItem_line_' + this.curLine.linenumber], true)
-        if (!curLineProps.visible) this.dataTable.scrollTop = curLineProps.reqFirstLineOffset
-      }
     }
   },
   async beforeMount () {
@@ -635,7 +625,6 @@ export default {
     this.scrollRequestData.appfilter = this.scrolldefinition.appfilter
     this.scrollRequestData.curSort = this.scrolldefinition.curSort
     if (undefined !== this.scrolldefinition.mobileSupported) this.scrollRequestData.mobileSupported = this.scrolldefinition.mobileSupported
-    if (undefined !== this.scrolldefinition.searchSupported) this.scrollRequestData.searchSupported = this.scrolldefinition.searchSupported
     if ((this.toolBoxActions !== undefined) && (this.toolBoxActions.length !== 0)) {
       this.actions.push({
         name: 'BtnToolBox',
@@ -652,7 +641,6 @@ export default {
     this.ready = true
     try {
       await this.first()
-      await this.selectInitialRow()
     } catch {}
     this.loading = false
   },
