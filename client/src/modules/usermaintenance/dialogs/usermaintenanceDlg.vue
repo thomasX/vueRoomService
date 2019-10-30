@@ -1,0 +1,123 @@
+<template>
+  <AbstractDialog v-if="ready" @handleKeyEvent="handleKeyEvent" :footerActions="footerActions" :screenmodel="screenModel" :titleextension="dataModel.bokey.RecordNumber.value.toString()">
+    <template v-slot:content>
+      <v-container grid-list-sm>
+        <v-layout v-if="isMobile" wrap style="text-align: left">
+          <v-flex xs12><b>{{translate('userEmail')}}</b></v-flex>
+          <v-flex xs6>{{dataModel.srcClager}}</v-flex>
+          <v-flex xs6>{{dataModel.srcCostDescr}}</v-flex>
+          <v-flex xs12><hr/></v-flex>
+          <v-flex xs12><b>{{translate('userPwd')}}</b></v-flex>
+          <v-flex xs6>{{dataModel.destClager}}</v-flex>
+          <v-flex xs6>{{dataModel.destCostDescr}}</v-flex>
+          <v-flex xs12><hr/></v-flex>
+          <v-flex xs12><b>{{translate('userlang')}}</b></v-flex>
+          <v-flex xs6>{{dataModel.dto.ArticleNr.value}}</v-flex>
+          <v-flex xs6>{{dataModel.dto.Description.value}}</v-flex>
+          <v-flex xs12><hr/></v-flex>
+          <v-flex xs12><b>{{translate('admin')}}</b></v-flex>
+          <v-flex xs12>{{dataModel.dto.Note.value}}</v-flex>
+        </v-layout>
+        <v-layout v-else wrap>
+          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userEmail')" v-model="dataModel.email" disabled></v-text-field></v-flex>
+          <v-flex xs12 sm8><v-text-field outlined type="password" placeholder=" " :label="translate('userPwd')" v-model="dataModel.password" disabled></v-text-field></v-flex>
+          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userlang')" v-model="dataModel.language" disabled></v-text-field></v-flex>
+          <v-flex xs12 sm8><v-checkbox :label="translate('admin')" v-model="dataModel.admin" disabled></v-checkbox></v-flex>
+        </v-layout>
+      </v-container>
+    </template>
+  </AbstractDialog>
+</template>
+
+<script>
+import AbstractDialog from '@/core/components/abstractDialog'
+import ScreenModel from '@/core/data-models/screenmodel.js'
+import userService from '@/modules/usermaintenance/usermaintenanceService.js'
+import KeyCodes from '@/core/data-models/keyCodes'
+
+export default {
+  name: 'UserMaintenanceDialog',
+  components: {
+    AbstractDialog
+  },
+  props: {
+    dataModel: {
+      type: Object,
+      required: true
+    },
+    callbackActionCommand: {
+      type: String,
+      required: true
+    }
+  },
+  data () {
+    return {
+      isMobile: false,
+      ready: false,
+      mandCtxt: {},
+      screenModel: new ScreenModel(),
+      footerActions: [
+        {
+          name: 'BtnSaveUser',
+          event: this.actionSave
+        },
+        {
+          name: 'BtnEscape',
+          event: this.actionAbort
+        }
+        // {
+        //   name: 'BtnEscape',
+        //   event: this.actionAbort,
+        //   icon: 'clear'
+        // }
+      ]
+    }
+  },
+  methods: {
+    handleKeyEvent (event) {
+      if (event.keyCode === KeyCodes.VK_F2) this.actionSave()
+      if (event.keyCode === KeyCodes.VK_ESCAPE) this.actionAbort()
+    },
+    actionHelp () {
+      alert('Help not available!')
+    },
+    async actionSave () {
+      try {
+        await this.userService.save(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
+        this.actionCloseDlg()
+      } catch (error) {
+        alert('Benutzer konnte nicht gespeichert werden! [ERROR: ' + error + ']')
+      }
+    },
+    async actionAbort () {
+      this.$emit('handleEvent', this.callbackActionCommand)
+    },
+    actionCloseDlg () {
+      this.dataModel.changedBokey = this.dataModel.bokey
+      this.actionAbort()
+    },
+    translate: function (untranslated) {
+      let result = untranslated
+      if (this.screenModel !== {}) {
+        result = this.screenModel.translate(untranslated)
+      }
+      return (result)
+    },
+    checkMobile: function () {
+      if (window.innerWidth < 750) this.isMobile = true
+      else this.isMobile = false
+    }
+  },
+  async beforeMount () {
+    this.checkMobile()
+    window.addEventListener('resize', this.checkMobile)
+    // this.userService = new TransportCtrl(this.$api)
+    this.mandCtxt = this.$store.getters['ctxtStore/get']
+    this.screenModel = await new ScreenModel().init(this.mandCtxt.mandantenID, this.mandCtxt.email, 'vue_TransFinishDlg', this.$api)
+    this.ready = true
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.checkMobile)
+  }
+}
+</script>

@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-progress-circular v-if="!ready" indeterminate color="primary" />
+    <UsermaintenanceDialog v-if="(ready && editDialogOpened)" @handleEvent="handleEvent" :screenmodel="screenmodel" :dataModel="dlgDataModel" :callbackActionCommand="callbackUsermaintenanceDlg"/>
     <DataScroll ref="scroll" v-if="ready" :lastrefreshRequest="lastrefreshRequest" :screenmodel="screenmodel" :scrolldefinition="scrolldefinition" :extendedscrollactions="extendedscrollactions" @handleEvent="handleEvent" :lineFactor="lineFactor"/>
   </div>
 </template>
@@ -8,19 +9,19 @@
 <script>
 import DataScroll from '@/core/components/scroll/datascroll'
 import ScreenmodelService from '@/services/ScreenmodelService'
-
-// import TransportFinishingDialog from '@/modules/transport/dialogs/TransportFinishingDialog.vue'
+import UsermaintenanceDialog from '@/modules/usermaintenance/dialogs/usermaintenanceDlg.vue'
 
 export default {
   name: 'UserScroll_Main',
   components: {
-    DataScroll
+    DataScroll,
+    UserMaintenanceDialog
   },
   data () {
     return {
       ready: false,
       lastrefreshRequest: { lastrefresh: new Date().toISOString() },
-      //callbackTransportFinishingDlg: 'actionCloseTransportFinishingDialog',
+      callbackUsermaintenanceDlg: 'actionCloseDialog',
       editDialogOpened: false,
       dataModel: {},
       lineFactor: 10,
@@ -39,13 +40,13 @@ export default {
   },
   methods: {
     handleEvent: function (actionCommand, event, line) {
-      if (actionCommand === 'BtnEdit') this.actionOpenUserDialog(line)
-      if (actionCommand === this.callbackTransportFinishingDlg) this.actionCloseTransportFinishingDialog(event)
+      if (actionCommand === 'BtnEdit') this.actionOpenUsermaintenanceDialog(line)
+      if (actionCommand === this.callbackUsermaintenanceDlg) this.actionCloseUsermaintenanceDialog(event)
     },
-    async actionOpenUserDialog (line) {
+    async actionOpenUsermaintenanceDialog (line) {
       alert('todo: implement actionOpenUserDialog' + line)
     },
-    actionCloseUserDialog (event) {
+    actionCloseUsermaintenanceDialog (event) {
       alert(JSON.stringify(event))
       this.editDialogOpened = false
       this.refreshScroll(this.dlgDataModel.changedBokey !== undefined)
