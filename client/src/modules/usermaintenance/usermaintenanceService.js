@@ -1,18 +1,13 @@
 import Api from '@/services/Api'
-import Screenmodel from '@/core/data-models/screenmodel'
 
 
 export default {
-  async getScreenmodel (screenId, language) {
+  async getUser (id) {
     try {
-      const withTranslations = process.env.VUE_APP_ROOMSERVICE_TRANSLATION_ACTIV
-      let screenmodelResponse ={data: ''}
-      if (withTranslations === true) {
-        screenmodelResponse = await new Api().get(`Screenmodel/${screenId}/${language}`)
-      }
-      return new Screenmodel(screenId, screenmodelResponse.data)
+        user = await new Api().get(`User/${id}`)
+      return user
     } catch {
-      return new Screenmodel(screenId)
+      return alert('user not found')
     }
   }
 

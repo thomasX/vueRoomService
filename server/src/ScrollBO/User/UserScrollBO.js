@@ -13,4 +13,9 @@ module.exports = class UserScrollBO {
     const pers = new PersClass()
     return pers
   }
+
+  createLinebokey (line) {
+    const id = line.id
+    return { id: id }
+  }
 }

@@ -32,11 +32,11 @@
 <script>
 import AbstractDialog from '@/core/components/abstractDialog'
 import ScreenModel from '@/core/data-models/screenmodel.js'
-import userService from '@/modules/usermaintenance/usermaintenanceService.js'
+import usermaintenanceService from '@/modules/Usermaintenance/usermaintenanceService.js'
 import KeyCodes from '@/core/data-models/keyCodes'
 
 export default {
-  name: 'UserMaintenanceDialog',
+  name: 'UsermaintenanceDialog',
   components: {
     AbstractDialog
   },
@@ -83,7 +83,7 @@ export default {
     },
     async actionSave () {
       try {
-        await this.userService.save(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
+        await this.usermaintenanceService.save(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
         this.actionCloseDlg()
       } catch (error) {
         alert('Benutzer konnte nicht gespeichert werden! [ERROR: ' + error + ']')

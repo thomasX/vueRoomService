@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-progress-circular v-if="!ready" indeterminate color="primary" />
-    <UsermaintenanceDialog v-if="(ready && editDialogOpened)" @handleEvent="handleEvent" :screenmodel="screenmodel" :dataModel="dlgDataModel" :callbackActionCommand="callbackUsermaintenanceDlg"/>
+    <UserMaintenanceDialog v-if="(ready && editDialogOpened)" @handleEvent="handleEvent" :screenmodel="screenmodel" :dataModel="dlgDataModel" :callbackActionCommand="callbackUsermaintenanceDlg"/>
     <DataScroll ref="scroll" v-if="ready" :lastrefreshRequest="lastrefreshRequest" :screenmodel="screenmodel" :scrolldefinition="scrolldefinition" :extendedscrollactions="extendedscrollactions" @handleEvent="handleEvent" :lineFactor="lineFactor"/>
   </div>
 </template>
@@ -9,7 +9,8 @@
 <script>
 import DataScroll from '@/core/components/scroll/datascroll'
 import ScreenmodelService from '@/services/ScreenmodelService'
-import UsermaintenanceDialog from '@/modules/usermaintenance/dialogs/usermaintenanceDlg.vue'
+import UserMaintenanceDialog from '@/modules/Usermaintenance/dialogs/usermaintenanceDlg.vue'
+import usermaintenanceService from '@/modules/Usermaintenance/usermaintenanceService'
 
 export default {
   name: 'UserScroll_Main',
@@ -44,7 +45,13 @@ export default {
       if (actionCommand === this.callbackUsermaintenanceDlg) this.actionCloseUsermaintenanceDialog(event)
     },
     async actionOpenUsermaintenanceDialog (line) {
-      alert('todo: implement actionOpenUserDialog' + line)
+       const dlgBoKey = line['#lbk#']
+       const user = await this.usermaintenanceService.getUser(dlgBoKey.id)
+      // await this.transportCtrl.changeMarkup(this.mandCtxt, dlgBoKey, new Date(dto.Date).toISOString(), 'true')
+       this.dlgDataModel.user = user
+       this.dlgDataModel.bokey = dlgBoKey
+       this.editDialogOpened = true
+      // alert('todo: implement actionOpenUserDialog' + JSON.stringify(line))
     },
     actionCloseUsermaintenanceDialog (event) {
       alert(JSON.stringify(event))

@@ -38,6 +38,7 @@ module.exports = {
           const orgColumn = orgLine[name]
           const convertedCol = (orgColumn['#val#'] !== undefined) ? orgColumn : { '#val#': orgColumn }
           convertedLine[name] = convertedCol
+          convertedLine['#lbk#'] = scrollBO.createLinebokey(orgLine)
         })
         linecol.push(convertedLine)
       })
