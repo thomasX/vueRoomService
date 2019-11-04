@@ -31,7 +31,7 @@
 
 <script>
 import AbstractDialog from '@/core/components/abstractDialog'
-import ScreenModel from '@/core/data-models/screenmodel.js'
+import ScreenmodelService from '@/services/ScreenmodelService'
 import usermaintenanceService from '@/modules/Usermaintenance/usermaintenanceService.js'
 import KeyCodes from '@/core/data-models/keyCodes'
 
@@ -113,7 +113,7 @@ export default {
     window.addEventListener('resize', this.checkMobile)
     // this.userService = new TransportCtrl(this.$api)
     this.mandCtxt = this.$store.getters['ctxtStore/get']
-    this.screenModel = await new ScreenModel().init(this.mandCtxt.mandantenID, this.mandCtxt.email, 'vue_TransFinishDlg', this.$api)
+    this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserMaintenanceDlg',user.language)
     this.ready = true
   },
   beforeDestroy () {
