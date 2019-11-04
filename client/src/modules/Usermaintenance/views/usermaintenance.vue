@@ -46,10 +46,14 @@ export default {
     },
     async actionOpenUsermaintenanceDialog (line) {
        const dlgBoKey = line['#lbk#']
-       const user = await this.usermaintenanceService.getUser(dlgBoKey.id)
+       const user = await usermaintenanceService.getUser(dlgBoKey.id)
       // await this.transportCtrl.changeMarkup(this.mandCtxt, dlgBoKey, new Date(dto.Date).toISOString(), 'true')
+       console.log('gefundener User:')
+       console.log(user)
+       this.dlgDataModel = {}
        this.dlgDataModel.user = user
        this.dlgDataModel.bokey = dlgBoKey
+       console.log(JSON.stringify(this.dlgDataModel))
        this.editDialogOpened = true
       // alert('todo: implement actionOpenUserDialog' + JSON.stringify(line))
     },

@@ -13,7 +13,7 @@ module.exports = (app) => {
 
   app.get('/User/activeAdminUserExists', AuthenticationController.activeAdminUserExists)
 
-  app.get('/User', UsermaintenanceCtrl.getUser)
+  app.get('/User/:id', UsermaintenanceCtrl.getUser)
 
   app.put('/Scroll/ScrollModel', scrollCtrl.getScrollModel)
 }

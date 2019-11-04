@@ -3,16 +3,19 @@ const { User } = require('../models')
 module.exports = {
   async getUser (req, res) {
     try {
-      const { id } = req.body
+      const id = req.params.id
       const user = await User.findOne({
         where: {
           id: id
         }
       })
       if ((user) && (user !== null)) {
-        res.send(true)
+        console.log('user gefunden:')
+        console.log(user.toJSON())
+        const userJSON = user.toJSON()
+        res.send(userJSON)
       } else {
-        res.send(false)
+        throw new TypeError('undefined User')
       }
     } catch (err) {
       res.status(500).send({
