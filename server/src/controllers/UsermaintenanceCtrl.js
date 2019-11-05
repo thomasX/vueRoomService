@@ -10,8 +10,6 @@ module.exports = {
         }
       })
       if ((user) && (user !== null)) {
-        console.log('user gefunden:')
-        console.log(user.toJSON())
         const userJSON = user.toJSON()
         res.send(userJSON)
       } else {

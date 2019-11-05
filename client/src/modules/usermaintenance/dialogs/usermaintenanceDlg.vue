@@ -1,5 +1,5 @@
 <template>
-  <AbstractDialog v-if="ready" @handleKeyEvent="handleKeyEvent" :footerActions="footerActions" :screenmodel="screenModel" :titleextension="dataModel.bokey.RecordNumber.value.toString()">
+  <AbstractDialog v-if="ready" @handleKeyEvent="handleKeyEvent" :footerActions="footerActions" :screenmodel="screenModel" :titleextension="dataModel.bokey.id.toString()">
     <template v-slot:content>
       <v-container grid-list-sm>
         <v-layout v-if="isMobile" wrap style="text-align: left">
@@ -55,7 +55,7 @@ export default {
       isMobile: false,
       ready: false,
       mandCtxt: {},
-      screenModel: new ScreenModel(),
+      screenModel: {},
       footerActions: [
         {
           name: 'BtnSaveUser',
@@ -112,8 +112,8 @@ export default {
     this.checkMobile()
     window.addEventListener('resize', this.checkMobile)
     // this.userService = new TransportCtrl(this.$api)
-    this.mandCtxt = this.$store.getters['ctxtStore/get']
-    this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserMaintenanceDlg',user.language)
+    const user = this.$store.getters['ctxtStore/get']
+    this.screenModel = await ScreenmodelService.getScreenmodel('vue_UserMaintenanceDlg',user.language)
     this.ready = true
   },
   beforeDestroy () {
