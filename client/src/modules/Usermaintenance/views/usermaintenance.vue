@@ -29,7 +29,10 @@ export default {
       scrolldefinition: {
         scrollBO: 'UserScrollBO',
         scrollID: 'vue_Userscroll_Main',
-        curSort: 'email'
+        curSort: 'email',
+        // appfilter: "((GRP like '%|G43|%') AND (ACTIVE < '#now#'))",
+        visibleCols: ['id', 'email', 'admin'],
+
       },
       extendedscrollactions: [
         {
@@ -47,18 +50,12 @@ export default {
     async actionOpenUsermaintenanceDialog (line) {
        const dlgBoKey = line['#lbk#']
        const user = await usermaintenanceService.getUser(dlgBoKey.id)
-      // await this.transportCtrl.changeMarkup(this.mandCtxt, dlgBoKey, new Date(dto.Date).toISOString(), 'true')
-       console.log('gefundener User:')
-       console.log(user)
        this.dlgDataModel = {}
-       this.dlgDataModel.user = user
+       this.dlgDataModel.user = user.data
        this.dlgDataModel.bokey = dlgBoKey
-       console.log(JSON.stringify(this.dlgDataModel))
        this.editDialogOpened = true
-      // alert('todo: implement actionOpenUserDialog' + JSON.stringify(line))
     },
     actionCloseUsermaintenanceDialog (event) {
-      alert(JSON.stringify(event))
       this.editDialogOpened = false
       this.refreshScroll(this.dlgDataModel.changedBokey !== undefined)
     },
@@ -69,7 +66,6 @@ export default {
   },
   async beforeMount () {
     const user = this.$store.getters['ctxtStore/get']
-    console.log(JSON.stringify(user))
     this.screenmodel = await ScreenmodelService.getScreenmodel('vue_UserScroll_Main',user.language)
     this.ready = true
   }
