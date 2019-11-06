@@ -3,7 +3,9 @@
     <template v-slot:content>
       <v-container grid-list-sm>
         <v-layout v-if="isMobile" wrap style="text-align: left">
-          <v-flex xs12><b>{{translate('userEmail')}}</b></v-flex>
+          <v-flex xs12>
+            <v-text-field outlined type="text" placeholder=" " :label="translate('email')" v-model="dataModel.user.email" />
+          </v-flex>
           <v-flex xs6>{{dataModel.srcClager}}</v-flex>
           <v-flex xs6>{{dataModel.srcCostDescr}}</v-flex>
           <v-flex xs12><hr/></v-flex>
@@ -19,10 +21,10 @@
           <v-flex xs12>{{dataModel.dto.Note.value}}</v-flex>
         </v-layout>
         <v-layout v-else wrap>
-          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userEmail')" v-model="dataModel.email" disabled></v-text-field></v-flex>
-          <v-flex xs12 sm8><v-text-field outlined type="password" placeholder=" " :label="translate('userPwd')" v-model="dataModel.password" disabled></v-text-field></v-flex>
-          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userlang')" v-model="dataModel.language" disabled></v-text-field></v-flex>
-          <v-flex xs12 sm8><v-checkbox :label="translate('admin')" v-model="dataModel.admin" disabled></v-checkbox></v-flex>
+          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userEmail')" v-model="dataModel.user.email" ></v-text-field></v-flex>
+          <v-flex xs12 sm8><v-text-field outlined type="password" placeholder=" " :label="translate('userPwd')" v-model="dataModel.user.password" ></v-text-field></v-flex>
+          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userlang')" v-model="dataModel.user.language" ></v-text-field></v-flex>
+          <v-flex xs12 sm8><v-checkbox :label="translate('admin')" v-model="dataModel.user.admin" ></v-checkbox></v-flex>
         </v-layout>
       </v-container>
     </template>
