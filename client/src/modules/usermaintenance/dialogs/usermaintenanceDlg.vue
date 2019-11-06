@@ -86,9 +86,9 @@ export default {
     async actionSave () {
       try {
         if (this.dataModel.createModus) {
-          await this.usermaintenanceService.create(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
+          await usermaintenanceService.create(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
         } else {
-          await this.usermaintenanceService.update(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
+          await usermaintenanceService.update(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
         } 
         this.actionCloseDlg()
       } catch (error) {

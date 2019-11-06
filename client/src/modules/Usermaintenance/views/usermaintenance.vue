@@ -56,6 +56,7 @@ export default {
        this.editDialogOpened = true
     },
     actionCloseUsermaintenanceDialog (event) {
+      //console.log(JSON.stringify(event))
       this.editDialogOpened = false
       this.refreshScroll(this.dlgDataModel.changedBokey !== undefined)
     },

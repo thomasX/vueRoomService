@@ -4,7 +4,7 @@
 
 <script>
 import datascroll from  '@/core/components/scroll/datascroll'
-import Scrollmodel from '@/core/models/scrollmodel'
+import Scrollmodel from '@/core/data-models/scrollmodel'
 export default {
   name: 'menue',
   components:{
