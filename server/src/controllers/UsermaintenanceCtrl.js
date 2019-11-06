@@ -20,5 +20,33 @@ module.exports = {
         error: 'An error has occured trying to log in'
       })
     }
+  },
+  async createUser (req, res) {
+    try {
+      const user = await User.create(req.body)
+      const userJson = user.toJSON()
+      res.send({
+        user: userJson,
+        created: true
+      })
+    } catch (err) {
+      res.status(400).send({
+        error: 'This email account is already in use.'
+      })
+    }
+  },
+  async updateUser (req, res) {
+    try {
+      const user = await User.update(req.body)
+      const userJson = user.toJSON()
+      res.send({
+        user: userJson,
+        created: true
+      })
+    } catch (err) {
+      res.status(400).send({
+        error: 'This email account is already in use.'
+      })
+    }
   }
 }

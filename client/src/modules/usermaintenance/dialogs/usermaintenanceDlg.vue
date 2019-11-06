@@ -85,7 +85,11 @@ export default {
     },
     async actionSave () {
       try {
-        await this.usermaintenanceService.save(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
+        if (this.dataModel.createModus) {
+          await this.usermaintenanceService.create(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
+        } else {
+          await this.usermaintenanceService.update(this.mandCtxt, this.dataModel.bokey, this.dataModel.dto.Date.isoTime)
+        } 
         this.actionCloseDlg()
       } catch (error) {
         alert('Benutzer konnte nicht gespeichert werden! [ERROR: ' + error + ']')

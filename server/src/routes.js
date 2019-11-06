@@ -6,8 +6,16 @@ const UsermaintenanceCtrl = require('./controllers/UsermaintenanceCtrl')
 
 module.exports = (app) => {
   app.post('/User/register',
-    AuthenticationControllerPolicy.register,
+    AuthenticationControllerPolicy.validateUser,
     AuthenticationController.register)
+
+  app.post('/User/createUser',
+    AuthenticationControllerPolicy.validateUser,
+    UsermaintenanceCtrl.createUser)
+
+  app.post('/User/updateUser',
+    AuthenticationControllerPolicy.validateUser,
+    UsermaintenanceCtrl.updateUser)
 
   app.post('/User/login', AuthenticationController.login)
 

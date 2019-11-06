@@ -31,7 +31,7 @@ export default {
         scrollID: 'vue_Userscroll_Main',
         curSort: 'email',
         // appfilter: "((GRP like '%|G43|%') AND (ACTIVE < '#now#'))",
-        visibleCols: ['id', 'email', 'admin'],
+        visibleCols: ['email', 'admin', 'id'],
 
       },
       extendedscrollactions: [
@@ -49,7 +49,7 @@ export default {
     },
     async actionOpenUsermaintenanceDialog (line) {
        const dlgBoKey = line['#lbk#']
-       const user = await usermaintenanceService.getUser(dlgBoKey.id)
+       const user = await usermaintenanceService.read(dlgBoKey.id)
        this.dlgDataModel = {}
        this.dlgDataModel.user = user.data
        this.dlgDataModel.bokey = dlgBoKey
