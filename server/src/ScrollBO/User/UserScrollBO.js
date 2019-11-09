@@ -1,11 +1,12 @@
 const ScrollPersistency = {
-  email: require('./UserScrollPersistencyEMAIL')
+  email: require('./UserScrollPersistencyEMAIL'),
+  id: require('./UserScrollPersistencyID')
 }
 
 module.exports = class UserScrollBO {
   constructor () {
     this.modelName = 'User'
-    this.scrollableColumns = Object.keys(ScrollPersistency)
+    this.scrollableColumns = { email: '', id: '' }
   }
 
   createScrollPersistency (sortCol) {
