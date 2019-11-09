@@ -10,7 +10,6 @@ export default class scrollCtrl {
     } catch (error) {
       alert(error)
     }
-    console.log(JSON.stringify(result))
     return result
   }
 }

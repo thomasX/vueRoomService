@@ -5,6 +5,7 @@ export default class Scrolldefinition {
     this.appfilter = ''
     this.curSort = ''
     this.mobileSupported = true
+    this.searchSupported = true
     this.visibleCols = []
   }
 }

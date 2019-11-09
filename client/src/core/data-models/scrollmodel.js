@@ -19,7 +19,6 @@ export default class ScrollModel {
         line.linenumber = counter++
       })
     }
-    console.log(JSON.stringify(this))
   }
 
   generateHeaders (screenmodel) {
