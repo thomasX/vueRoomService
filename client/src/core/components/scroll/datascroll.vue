@@ -205,7 +205,6 @@ export default {
     },
     requestFocus () {
       this.$nextTick(this.$refs.scrollContainer.focus())
-      console.log(this.$refs)
       try {
         this.markDataEndReached()
       } catch (error) {
