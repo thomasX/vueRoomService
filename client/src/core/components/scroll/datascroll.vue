@@ -205,6 +205,7 @@ export default {
     },
     requestFocus () {
       this.$nextTick(this.$refs.scrollContainer.focus())
+      console.log(this.$refs)
       try {
         this.markDataEndReached()
       } catch (error) {
@@ -246,8 +247,8 @@ export default {
       const lastElement = this.$refs['refItem_line_' + (this.model.lines.length - 1)]
       const lastReached = ((this.model.lastDataReached) && (this.calcLineProperties(this.$refs.scrollContainer, lastElement, true).visible))
       const firstReached = ((this.model.firstDataReached) && (this.calcLineProperties(this.$refs.scrollContainer, firstElement, true).visible))
-      this.$refs.dateTableFixedFooter.setLastDataReached(lastReached)
       this.$refs.dateTableFixedFooter.setFirstDataReached(firstReached)
+      this.$refs.dateTableFixedFooter.setLastDataReached(lastReached)
     },
     handleClick (line) {
       if (!this.loading) {
