@@ -9,11 +9,11 @@ module.exports = (app) => {
     AuthenticationControllerPolicy.validateUser,
     AuthenticationController.register)
 
-  app.post('/User/createUser',
+  app.post('/User/create',
     AuthenticationControllerPolicy.validateUser,
     UsermaintenanceCtrl.createUser)
 
-  app.post('/User/updateUser',
+  app.post('/User/update',
     AuthenticationControllerPolicy.validateUser,
     UsermaintenanceCtrl.updateUser)
 

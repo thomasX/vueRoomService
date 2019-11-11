@@ -49,9 +49,9 @@ export default {
     },
     async actionOpenUsermaintenanceDialog (line) {
        const dlgBoKey = line['#lbk#']
-       const user = await usermaintenanceService.read(dlgBoKey.id)
+       const response = await usermaintenanceService.read(dlgBoKey.id)
        this.dlgDataModel = {}
-       this.dlgDataModel.user = user.data
+       this.dlgDataModel.user = response.data
        this.dlgDataModel.bokey = dlgBoKey
        this.editDialogOpened = true
     },

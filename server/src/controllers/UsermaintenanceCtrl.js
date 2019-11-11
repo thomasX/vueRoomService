@@ -37,6 +37,7 @@ module.exports = {
   },
   async updateUser (req, res) {
     try {
+      console.log(req.body)
       const user = await User.update(req.body)
       const userJson = user.toJSON()
       res.send({
