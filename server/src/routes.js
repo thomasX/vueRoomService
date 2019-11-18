@@ -14,7 +14,7 @@ module.exports = (app) => {
     UsermaintenanceCtrl.createUser)
 
   app.post('/User/update',
-    AuthenticationControllerPolicy.validateUser,
+    // AuthenticationControllerPolicy.validateUser,
     UsermaintenanceCtrl.updateUser)
 
   app.post('/User/login', AuthenticationController.login)

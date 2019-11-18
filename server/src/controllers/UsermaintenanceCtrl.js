@@ -37,16 +37,19 @@ module.exports = {
   },
   async updateUser (req, res) {
     try {
-      console.log(req.body)
-      const user = await User.update(req.body)
-      const userJson = user.toJSON()
+      console.log('####### req.body ###########')
+      const user = req.body
+      console.log(JSON.stringify(user))
+      console.log('##################req.body')
+      const updatedUser = await User.update({ user }, { where: { _id: user.id } })
+      const userJson = updatedUser.toJSON()
       res.send({
         user: userJson,
-        created: true
+        updated: true
       })
     } catch (err) {
       res.status(400).send({
-        error: 'This email account is already in use.'
+        error: 'This email accound doesnot exist'
       })
     }
   }
