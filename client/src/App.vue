@@ -7,6 +7,7 @@
           <router-view/>
         </v-content>
       </main>
+      <InterActionDialog ref="interactionDialog"/>
     </v-app>
   </div>
 </template>

@@ -38,6 +38,14 @@ export default {
         {
           name: 'BtnEdit',
           icon: 'edit'
+        },
+        {
+          name: 'BtnCreate',
+          icon: 'add_circle_outline'
+        },
+        {
+          name: 'BtnDelete',
+          icon: 'delete'
         }
       ]
     }
@@ -45,7 +53,13 @@ export default {
   methods: {
     handleEvent: function (actionCommand, event, line) {
       if (actionCommand === 'BtnEdit') this.actionOpenUsermaintenanceDialog(line)
+      if (actionCommand === 'BtnDelete') this.actionDelete(line)
       if (actionCommand === this.callbackUsermaintenanceDlg) this.actionCloseUsermaintenanceDialog(event)
+    },
+    async actionDelete (line) {
+      ... da war ich
+      await this.$util.interactionDialog.popup(this.translate('popupTitle'), this.translate('firstImageReached'), 750)
+      refreshScroll (true)
     },
     async actionOpenUsermaintenanceDialog (line) {
        const dlgBoKey = line['#lbk#']
