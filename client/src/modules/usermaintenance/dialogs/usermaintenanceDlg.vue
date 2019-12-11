@@ -119,6 +119,7 @@ export default {
     window.addEventListener('resize', this.checkMobile)
     // this.userService = new TransportCtrl(this.$api)
     const user = this.$store.getters['ctxtStore/get']
+    const lang = (user.language  === undefined) ? 'de' : user.language
     this.screenModel = await ScreenmodelService.getScreenmodel('vue_UserMaintenanceDlg',user.language)
     this.ready = true
   },

@@ -44,6 +44,10 @@ export default {
           icon: 'add_circle_outline'
         },
         {
+          name: 'BtnDuplicate',
+          icon: 'library_books'
+        },
+        {
           name: 'BtnDelete',
           icon: 'delete'
         }
@@ -52,22 +56,40 @@ export default {
   },
   methods: {
     handleEvent: function (actionCommand, event, line) {
-      if (actionCommand === 'BtnEdit') this.actionOpenUsermaintenanceDialog(line)
+      if (actionCommand === 'BtnEdit') this.actionOpenUsermaintenanceDialog(line, 'edit')
+      if (actionCommand === 'BtnCreate') this.actionOpenUsermaintenanceDialog(line, 'create')
+      if (actionCommand === 'BtnDuplicate') this.actionOpenUsermaintenanceDialog(line, 'duplicate')
       if (actionCommand === 'BtnDelete') this.actionDelete(line)
       if (actionCommand === this.callbackUsermaintenanceDlg) this.actionCloseUsermaintenanceDialog(event)
     },
     async actionDelete (line) {
-      ... da war ich
-      await this.$util.interactionDialog.popup(this.translate('popupTitle'), this.translate('firstImageReached'), 750)
-      refreshScroll (true)
+      try {
+      const msg = JSON.stringify(line['#lbk#'])
+        await this.$util.interactionDialog.popup(this.screenmodel.translate('popupTitle'), this.screenmodel.translate(msg), 750)
+        refreshScroll (true)
+      } catch (error) {
+        console.log('klklk')
+      }
     },
-    async actionOpenUsermaintenanceDialog (line) {
-       const dlgBoKey = line['#lbk#']
-       const response = await usermaintenanceService.read(dlgBoKey.id)
-       this.dlgDataModel = {}
-       this.dlgDataModel.user = response.data
-       this.dlgDataModel.bokey = dlgBoKey
-       this.editDialogOpened = true
+    async actionOpenUsermaintenanceDialog (line, modus) {
+       this.dlgDataModel = await this.createUserMaintenanceDialogDatamodel(line, modus)
+       const inValidData = ((modus !== 'create') && (this.dlgDataModel.bokey.id === 0 ))
+       if (!inValidData) this.editDialogOpened = true
+    },
+    async createUserMaintenanceDialogDatamodel (line, modus) {
+      let result = {}
+      result.modus = modus
+      let dlgBoKey =  { id: 0}
+      result.user = {} 
+      result.createModus = (modus === 'create')
+      if (modus !== 'create') {
+        dlgBoKey = line['#lbk#']
+        const response = await usermaintenanceService.read(dlgBoKey.id)
+        result.user = response.data
+      }
+      console.log(dlgBoKey)
+      result.bokey = dlgBoKey
+      return result
     },
     actionCloseUsermaintenanceDialog (event) {
       //console.log(JSON.stringify(event))

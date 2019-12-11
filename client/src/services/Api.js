@@ -37,21 +37,21 @@ export default class Api {
     return result
   }
 
-  // async putAuthorized (service, params, data) {
-  //   const token = this.keycloak.token
-  //   const config = {
-  //     headers: {
-  //       'Authorization': ('Bearer ' + token),
-  //       'Access-Control-Allow-Origin': '*'
-  //     }
-  //   }
-  //   if (params !== undefined) config.params = params
-  //   const servicePath = this.pathPrefix + service
-  //   let response = await axios.put(servicePath, data, config).catch(error => {
-  //     console.log('Error: /n' + JSON.stringify(error))
-  //   })
-  //   return response
-  // }
+  async putAuthorized (service, params, data) {
+    const token = this.keycloak.token
+    const config = {
+      headers: {
+        'Authorization': ('Bearer ' + token),
+        'Access-Control-Allow-Origin': '*'
+      }
+    }
+    if (params !== undefined) config.params = params
+    const servicePath = this.pathPrefix + service
+    let response = await axios.put(servicePath, data, config).catch(error => {
+      console.log('Error: /n' + JSON.stringify(error))
+    })
+    return response
+  }
 
   async put (service, params, data) {
     const config = {

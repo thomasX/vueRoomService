@@ -5,12 +5,12 @@
         <v-progress-linear indeterminate v-slot:progress/>
         <template v-if="!isMobile" v-slot:header="props">
           <thead fixed-header ref="dataTableFixedHeader">
-            <tr>
+            <draggable v-model="computedHeaders" tag="tr">
               <th v-for="header in computedHeaders" :key=header.value @click="changeSort(header.value)">
                 <span :style="getHeaderStyle(header)"> {{ header.text }} </span>
                 <v-icon v-if="header.searchable" :style="getHeaderStyle(header)" small>mdi-menu-down</v-icon>
               </th>
-            </tr>
+            </draggable>
           </thead>
         </template>
         <template v-slot:item="props">
@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 import Scrolldefinition from '@/core/data-models/scrolldefinition'
 import Footer from '@/core/components/footer'
 import ToolBox from '@/core/components/toolBox'
@@ -64,7 +65,8 @@ export default {
   name: 'scrollContainer',
   components: {
     Footer,
-    ToolBox
+    ToolBox,
+    draggable
   },
   props: {
     scrolldefinition: Object,
@@ -77,6 +79,8 @@ export default {
   },
   data () {
     return {
+      headers: [],
+      computedHeaders: [],
       predefinedlineCount: undefined,
       offsetTop: 0,
       scrollHeaderHeight: 56,
@@ -127,15 +131,13 @@ export default {
     async lastrefreshRequest () {
       const first = ((this.lastrefreshRequest !== undefined) && (this.lastrefreshRequest.firstPage))
       const last = ((this.lastrefreshRequest !== undefined) && (this.lastrefreshRequest.lastPage) && (!first))
-      if ((!last) && (!first)) {
-        await this.pgDown(this.curLine.linenumber)
-      }
+      if ((!last) && (!first)) await this.pgDown(this.curLine.linenumber)
       if (first) await this.first()
       if (last) await this.last()
     }
   },
-  computed: {
-    computedHeaders () {
+  methods: {
+    async generateHeaders () {
       let sortHeader
       let compHeaders = []
       let sortColIncluded = false
@@ -160,10 +162,9 @@ export default {
           if (!sortColIncluded && (sortHeader !== undefined)) compHeaders.unshift(sortHeader)
         }
       }
-      return compHeaders
-    }
-  },
-  methods: {
+      this.headers = compHeaders
+      this.computedHeaders = compHeaders
+    },
     getHeight () {
       let headerHeight = this.$root.$children[0].$refs.appHeader.getHeight()
       let footerHeight = (this.$refs.dateTableFixedFooter) ? this.$refs.dateTableFixedFooter.getHeight() : 0
@@ -246,8 +247,8 @@ export default {
       const lastElement = this.$refs['refItem_line_' + (this.model.lines.length - 1)]
       const lastReached = ((this.model.lastDataReached) && (this.calcLineProperties(this.$refs.scrollContainer, lastElement, true).visible))
       const firstReached = ((this.model.firstDataReached) && (this.calcLineProperties(this.$refs.scrollContainer, firstElement, true).visible))
-      this.$refs.dateTableFixedFooter.setFirstDataReached(firstReached)
       this.$refs.dateTableFixedFooter.setLastDataReached(lastReached)
+      this.$refs.dateTableFixedFooter.setFirstDataReached(firstReached)
     },
     handleClick (line) {
       if (!this.loading) {
@@ -405,9 +406,8 @@ export default {
     },
     calcLastVisibleLineIndex () {
       let lastvisible = -1
-      if ((this.predefinedlineCount !== undefined) || (this.predefinedlineCount > 0)) {
-        lastvisible = this.model.lines.length - 1
-      } else {
+      if ((this.predefinedlineCount !== undefined) || (this.predefinedlineCount > 0)) lastvisible = this.model.lines.length - 1
+      else {
         this.calcLineCount()
         let linecounter = this.model.lines.length - 1
         while ((linecounter >= 0) && (lastvisible < 0)) {
@@ -426,9 +426,8 @@ export default {
       alert('Help not yet implemented!')
     },
     async pgUp () {
-      if (this.model.firstDataReached) {
-        await this.first()
-      } else {
+      if (this.model.firstDataReached) await this.first()
+      else {
         this.loading = true
         let startLine
         try {
@@ -444,9 +443,8 @@ export default {
     },
     nextPage () {
       const nextStartingPosition = this.getCachedStartingLine(true)
-      if (nextStartingPosition === undefined) {
-        this.pgDown()
-      } else {
+      if (nextStartingPosition === undefined) this.pgDown()
+      else {
         this.curLine = nextStartingPosition.startingLine
         this.dataTable.scrollTop = nextStartingPosition.lineProperties.reqFirstLineOffset
         this.requestFocus()
@@ -540,6 +538,7 @@ export default {
       this.requestFocus()
     },
     generateScrollRequest (forward) {
+      this.saveScrollConfig()
       const refreshedAppfilter = this.refreshAppfilter(this)
       if (refreshedAppfilter !== undefined) this.scrollRequestData.appfilter = refreshedAppfilter
       return {
@@ -548,11 +547,18 @@ export default {
         scrollID: this.scrollRequestData.scrollID,
         rows: ((this.predefinedlineCount !== undefined) && (this.predefinedlineCount > 0) ? this.predefinedlineCount : this.calcLineCount()),
         direction: forward,
-        sort: this.scrollRequestData.curSort
+        sort: this.scrollRequestData.curSort,
+        toolID: this.mandCtxt.curToolID
+      }
+    },
+    saveScrollConfig () {
+      const equal = (JSON.stringify(this.headers) === JSON.stringify(this.computedHeaders))
+      if (!equal) {
+        this.scrollCtrl.saveScrollConfig(this.mandCtxt, this.scrollRequestData.scrollID, this.computedHeaders)
+        this.headers = this.computedHeaders
       }
     },
     refreshAppfilter () {
-
     },
     calcLineCount () {
       let headerHeight = (this.isMobile) ? 50 : 75
@@ -654,6 +660,7 @@ export default {
       await this.first()
       await this.selectInitialRow()
     } catch {}
+    this.generateHeaders()
     this.loading = false
   },
   async mounted () {
@@ -663,6 +670,8 @@ export default {
       dt.addEventListener('scroll', this.onScroll)
       this.dataTable = dt
     }
+  },
+  beforeDestroy () {
   }
 }
 </script>
