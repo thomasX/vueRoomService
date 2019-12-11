@@ -31,7 +31,7 @@ export default class Api {
     if (params !== undefined) config.params = params
     const servicePath = (pathPrefix === undefined) ? (this.pathPrefix + service) : (pathPrefix + service)
     const response = await axios.get(servicePath, config).catch(error => {
-      consol.error('Error: /n' + JSON.stringify(error))
+      console.error('Error: /n' + JSON.stringify(error))
     })
     let result = response
     return result
