@@ -97,7 +97,7 @@ export default {
       this.refreshScroll(this.dlgDataModel.changedBokey !== undefined)
     },
     refreshScroll (update) {
-      if (update) this.lastrefreshRequest = new Date().toISOString()
+      if (update) this.lastrefreshRequest = { lastrefresh: new Date().toISOString() }
       this.$refs.scroll.requestFocus()
     }
   },

@@ -41,7 +41,7 @@ module.exports = {
       const user = req.body
       console.log(JSON.stringify(user))
       console.log('##################req.body')
-      const updatedUser = await User.update({ user }, { where: { _id: user.id } })
+      const updatedUser = await User.update(user, { where: { _id: user.id } })
       const userJson = updatedUser.toJSON()
       res.send({
         user: userJson,
