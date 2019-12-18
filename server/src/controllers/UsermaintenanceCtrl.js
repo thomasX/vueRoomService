@@ -23,10 +23,11 @@ module.exports = {
   },
   async createUser (req, res) {
     try {
-      const user = await User.create(req.body)
-      const userJson = user.toJSON()
+      // const user =
+      await User.create(req.body)
+      // const userJson = user.toJSON()
       res.send({
-        user: userJson,
+        // user: userJson,
         created: true
       })
     } catch (err) {
@@ -37,14 +38,15 @@ module.exports = {
   },
   async updateUser (req, res) {
     try {
-      console.log('####### req.body ###########')
+      // console.log('####### req.body ###########')
       const user = req.body
-      console.log(JSON.stringify(user))
-      console.log('##################req.body')
-      const updatedUser = await User.update(user, { where: { _id: user.id } })
-      const userJson = updatedUser.toJSON()
+      // console.log(JSON.stringify(user))
+      // console.log('##################req.body')
+      // const updatedUser =
+      await User.update(user, { where: { id: user.id } })
+      // const userJson = updatedUser.toJSON()
       res.send({
-        user: userJson,
+        // user: userJson,
         updated: true
       })
     } catch (err) {

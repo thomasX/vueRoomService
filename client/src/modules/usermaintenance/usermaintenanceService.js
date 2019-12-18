@@ -12,16 +12,16 @@ export default {
   },
   async update (user) {
     try {
-      new Api().post('User/update',undefined, user)
-    } catch {
-      return alert('user not found')
+      new Api().put('User/update',undefined, user)
+    } catch (error) {
+      return alert('user not found  ....#######.....##### ' + error)
     }
   },
   async create (user) {
     try {
       return new Api().post('User/create',undefined, user)
-    } catch {
-      return alert('cannot save user')
+    } catch (error) {
+      return alert('cannot save user' +error) 
     }
   }
 }

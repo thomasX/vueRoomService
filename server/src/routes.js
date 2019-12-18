@@ -13,7 +13,7 @@ module.exports = (app) => {
     AuthenticationControllerPolicy.validateUser,
     UsermaintenanceCtrl.createUser)
 
-  app.post('/User/update',
+  app.put('/User/update',
     // AuthenticationControllerPolicy.validateUser,
     UsermaintenanceCtrl.updateUser)
 
