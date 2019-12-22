@@ -33,8 +33,8 @@ module.exports = {
         const convertedLine = {}
         const colNames = Object.keys(orgLine)
         result.scrollModel.CurScrollDTO.NameCollection = colNames
-        console.log('orgLine')
-        console.log(orgLine)
+        // console.log('orgLine')
+        // console.log(orgLine)
         colNames.forEach(name => {
           const orgColumn = orgLine[name]
           const convertedCol = (orgColumn['#val#'] !== undefined) ? orgColumn : { '#val#': orgColumn }

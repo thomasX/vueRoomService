@@ -85,9 +85,13 @@ export default {
     },
     async actionSave () {
       try {
+        console.log ('äääääääää bin im  save: createModus:' + this.dataModel.createModus)
+        console.log  (JSON.stringify(this.dataModel))
         if (this.dataModel.createModus) {
+          console.log ('creating:!')
           await usermaintenanceService.create(this.dataModel.user)
         } else {
+          console.log ('updating')
           await usermaintenanceService.update(this.dataModel.user)
         } 
         this.actionCloseDlg()

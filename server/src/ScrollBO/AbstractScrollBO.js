@@ -5,7 +5,7 @@ module.exports = class AbstractScrollBO {
 
   async collectLines (scrollBO, scrollrequest, userCtxt) {
     let startingLine = scrollrequest.start
-    console.log(startingLine)
+    // console.log(startingLine)
     const forward = scrollrequest.direction
     const result = { firstDataReached: false, lastDataReached: false, createdWithBackwardDirection: false, lines: [] }
     if (forward) {

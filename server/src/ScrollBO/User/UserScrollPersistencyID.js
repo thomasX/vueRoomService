@@ -4,7 +4,7 @@ module.exports = class UserScrollPersistencyEMAIL {
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, 1)
-    console.log('firstStatement: ' + statement)
+    // console.log('firstStatement: ' + statement)
     return { statement: statement, replacements: [] }
   }
 
@@ -13,7 +13,7 @@ module.exports = class UserScrollPersistencyEMAIL {
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, 1)
-    console.log('lastStatement: ' + statement)
+    // console.log('lastStatement: ' + statement)
     return { statement: statement, replacements: [] }
   }
 
@@ -22,7 +22,7 @@ module.exports = class UserScrollPersistencyEMAIL {
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, rows)
-    console.log('forwardStatement: ' + statement + '### rows:' + rows)
+    // console.log('forwardStatement: ' + statement + '### rows:' + rows)
     const startid = this.extractColumnValue(start['id'])
     return { statement: statement, replacements: [startid] }
   }
@@ -36,7 +36,7 @@ module.exports = class UserScrollPersistencyEMAIL {
     const filterstatement = this.createFilterstatement(filter)
     statement = statement.replace(/#filter#/, filterstatement)
     statement = statement.replace(/#rows#/, rows)
-    console.log('backwardStatement: ' + statement)
+    // console.log('backwardStatement: ' + statement)
     const startid = this.extractColumnValue(start['id'])
     return { statement: statement, replacements: [startid] }
   }
@@ -46,7 +46,7 @@ module.exports = class UserScrollPersistencyEMAIL {
     if ((filter !== undefined) && (filter.length > 0)) {
       filterstatement = 'AND ( ' + filter + ' ) '
     }
-    console.log('filterstatement:' + filterstatement + '##')
+    // console.log('filterstatement:' + filterstatement + '##')
     return filterstatement
   }
 }
