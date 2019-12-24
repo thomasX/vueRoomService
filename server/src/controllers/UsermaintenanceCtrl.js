@@ -1,30 +1,28 @@
-const { User } = require('../models')
+const db = require('../models/index')
+const UserBO = require('../BO/UserBO')
 
 module.exports = {
   async getUser (req, res) {
     try {
       const id = req.params.id
-      const user = await User.findOne({
-        where: {
-          id: id
-        }
-      })
-      if ((user) && (user !== null)) {
-        const userJSON = user.toJSON()
+      const bo = new UserBO({ id: id })
+      const result = bo.getDTO()
+      if ((result) && (result !== null)) {
+        const userJSON = JSON.stringify(result)
         res.send(userJSON)
       } else {
         throw new TypeError('undefined User')
       }
     } catch (err) {
       res.status(500).send({
-        error: 'An error has occured trying to log in'
+        error: 'An error has occured trying to log in ' + err
       })
     }
   },
   async createUser (req, res) {
     try {
       // const user =
-      await User.create(req.body)
+      await db['User'].create(req.body)
       // const userJson = user.toJSON()
       res.send({
         // user: userJson,
@@ -41,15 +39,16 @@ module.exports = {
       // console.log('####### req.body ###########')
       const user = req.body
       // console.log(JSON.stringify(user))
-      // console.log('##################req.body')
+      console.log('##################req.body')
       // const updatedUser =
-      await User.update(user, { where: { id: user.id } })
+      await db['User'].update(user, { where: { id: user.id } })
       // const userJson = updatedUser.toJSON()
       res.send({
         // user: userJson,
         updated: true
       })
     } catch (err) {
+      console.log(err)
       res.status(400).send({
         error: 'This email accound doesnot exist'
       })

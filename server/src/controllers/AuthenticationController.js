@@ -1,22 +1,21 @@
-const { User } = require('../models')
+const db = require('../models/index')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
+const UserGBO = require('../BO/UserGBO')
 
 function jwtSignUser (user) {
   const ONE_WEEK = 60 * 60 * 24 * 7
-  return jwt.sign(user, config.authentication.jwtSecret, {
-    expiresIn: ONE_WEEK
-  })
+  const token = jwt.sign({ email: user.email, exp: ONE_WEEK }, config.authentication.jwtSecret)
+  return token
 }
 
 module.exports = {
   async register (req, res) {
     try {
-      const user = await User.create(req.body)
-      const userJson = user.toJSON()
+      const user = await db['User'].create(req.body)
       res.send({
-        user: userJson,
-        token: jwtSignUser(userJson)
+        user: JSON.stringify(user),
+        token: jwtSignUser(user.email)
       })
     } catch (err) {
       res.status(400).send({
@@ -25,40 +24,20 @@ module.exports = {
     }
   },
   async login (req, res) {
-    try {
-      const { email, password } = req.body
-      const user = await User.findOne({
-        where: {
-          email: email
-        }
-      })
-      if (!user) {
-        return res.status(403).send({
-          error: 'The login information was incorrect (1) email:' + email + 'pwd:' + password + 'user:' + user
-        })
-      }
-
-      const isPasswordValid = await user.comparePassword(password)
-      if (!isPasswordValid) {
-        return res.status(403).send({
-          error: 'The login information was incorrect' + email + 'pwd:' + password + 'user:' + user
-        })
-      }
-
-      const userJson = user.toJSON()
-      res.send({
-        user: userJson,
-        token: jwtSignUser(userJson)
-      })
-    } catch (err) {
-      res.status(500).send({
-        error: 'An error has occured trying to log in'
-      })
-    }
+    const { email, password } = req.body
+    console.log('email: ' + email)
+    console.log('passwd: ' + password)
+    const userGBO = new UserGBO(db)
+    const dto = await userGBO.login(email, password)
+    // delete dto.password
+    const token = jwtSignUser(dto)
+    console.log('token: ' + JSON.stringify(token))
+    const result = { user: dto.email, token: token }
+    res.send(result)
   },
   async activeAdminUserExists (req, res) {
     try {
-      const user = await User.findOne({
+      const user = await db['User'].findOne({
         where: {
           admin: true
         }
