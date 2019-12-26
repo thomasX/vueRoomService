@@ -13,7 +13,6 @@ module.exports = {
   async register (req, res) {
     try {
       const dto = req.body
-      console.log('####### ooooo#####:' + JSON.stringify(dto))
       const gbo = new UserGBO(db)
       await gbo.createUser(dto)
       res.send({
@@ -29,7 +28,6 @@ module.exports = {
     const { email, password } = req.body
     const userGBO = new UserGBO(db)
     const userPair = await userGBO.login(email, password)
-    console.log('############# login : ' + JSON.stringify(userPair))
     const bokey = userPair.key
     const dto = userPair.value
     delete dto.password

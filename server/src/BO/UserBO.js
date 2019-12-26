@@ -15,7 +15,6 @@ class UserBO extends AbstractBO {
   }
 
   async getDTO () {
-    console.log('BKOY:' + JSON.stringify(this.bokey))
     const user = await this.pers.findOne({
       where: {
         id: this.bokey.id
@@ -23,28 +22,21 @@ class UserBO extends AbstractBO {
     })
 
     const plain = user.get({ plain: true })
-    console.log('########## plainUSer:' + JSON.stringify(plain))
     const dto = this.extractDtoFromModel(plain, this.bokey)
-    console.log('##### und da ist das DTO:' + JSON.stringify(dto))
     return dto
   }
 
   async setDTO (user) {
     const dto = this.extractDtoFromModel(user, this.bokey)
-    console.log('######## curDTO:' + JSON.stringify(dto))
     const oldDTO = await this.getDTO()
-    console.log('######## oldDTO:' + JSON.stringify(oldDTO))
     await this.validateDTO(dto, oldDTO)
     await this.pers.update(dto, { where: this.bokey })
   }
 
   async create (user) {
-    console.log('######### CFREATE : ' + JSON.stringify(user))
     const dto = this.extractDtoFromModel(user, this.bokey)
     this.validateCreate(dto)
-    console.log('###### und Iatz: ' + JSON.stringify(dto))
     const hashedPasswd = await this.hashPassword(dto.password)
-    console.log('#######hashedPWD' + hashedPasswd)
     const newModel = this.replaceBokeyInModel(user, this.bokey)
     newModel.password = hashedPasswd
     await this.pers.create(newModel)
@@ -71,16 +63,12 @@ class UserBO extends AbstractBO {
   }
 
   async validateDTO (dto, oldDTO) {
-    console.log('############# validateDTO:')
     const curpwd = dto.password.toString()
     const oldpwd = oldDTO.password.toString()
-    console.log('######### oldpwd:' + oldpwd)
-    console.log('######### curpwd:' + curpwd)
 
     if (curpwd !== oldpwd) {
       const hashedPassword = await this.hashPassword(dto.password)
       dto.password = hashedPassword
-      console.log('######### pwd geändert:' + hashedPassword)
     }
     console.log('validateNochNicht implementiert oldPwd:' + oldpwd + '   newPwd:' + curpwd)
   }

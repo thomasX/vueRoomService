@@ -44,7 +44,6 @@ export default {
           email: this.email,
           password: this.password
         })
-        console.log('######## ' + JSON.stringify(response))
         this.$store.dispatch('ctxtStore/setToken', response.data.token)
         this.$store.dispatch('ctxtStore/set', response.data.user)
         this.$router.push({

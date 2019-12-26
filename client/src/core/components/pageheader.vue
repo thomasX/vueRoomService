@@ -58,6 +58,9 @@ export default {
     logout () {
       this.$store.dispatch('ctxtStore/setToken', null)
       this.$store.dispatch('ctxtStore/set', null)
+      this.$router.push({
+        name: 'home'
+      })
     },
     async checkActiveAdminUsers () {
       const response = await AuthenticationService.activeAdminUserExists()
