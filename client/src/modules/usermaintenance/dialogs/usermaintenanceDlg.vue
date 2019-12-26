@@ -4,7 +4,7 @@
       <v-container grid-list-sm>
         <v-layout v-if="isMobile" wrap style="text-align: left">
           <v-flex xs12>
-            <v-text-field outlined type="text" placeholder=" " :label="translate('email')" v-model="dataModel.user.email" />
+            <v-text-field outlined type="text" placeholder=" " :label="translate('email')" v-model="dataModel.dto.email" />
           </v-flex>
           <v-flex xs6>{{dataModel.srcClager}}</v-flex>
           <v-flex xs6>{{dataModel.srcCostDescr}}</v-flex>
@@ -21,10 +21,10 @@
           <v-flex xs12>{{dataModel.dto.Note.value}}</v-flex>
         </v-layout>
         <v-layout v-else wrap>
-          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userEmail')" v-model="dataModel.user.email" ></v-text-field></v-flex>
-          <v-flex xs12 sm8><v-text-field outlined type="password" placeholder=" " :label="translate('userPwd')" v-model="dataModel.user.password" ></v-text-field></v-flex>
-          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userlang')" v-model="dataModel.user.language" ></v-text-field></v-flex>
-          <v-flex xs12 sm8><v-checkbox :label="translate('admin')" v-model="dataModel.user.admin" ></v-checkbox></v-flex>
+          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userEmail')" v-model="dataModel.dto.email" ></v-text-field></v-flex>
+          <v-flex xs12 sm8><v-text-field outlined type="password" placeholder=" " :label="translate('userPwd')" v-model="dataModel.dto.password" ></v-text-field></v-flex>
+          <v-flex xs12 sm4><v-text-field outlined type="text" placeholder=" " :label="translate('userlang')" v-model="dataModel.dto.language" ></v-text-field></v-flex>
+          <v-flex xs12 sm8><v-checkbox :label="translate('admin')" v-model="dataModel.dto.admin" ></v-checkbox></v-flex>
         </v-layout>
       </v-container>
     </template>
@@ -85,14 +85,10 @@ export default {
     },
     async actionSave () {
       try {
-        console.log ('äääääääää bin im  save: createModus:' + this.dataModel.createModus)
-        console.log  (JSON.stringify(this.dataModel))
         if (this.dataModel.createModus) {
-          console.log ('creating:!')
-          await usermaintenanceService.create(this.dataModel.user)
+          await usermaintenanceService.create(this.dataModel.bokey, this.dataModel.dto)
         } else {
-          console.log ('updating')
-          await usermaintenanceService.update(this.dataModel.user)
+          await usermaintenanceService.update(this.dataModel.bokey, this.dataModel.dto)
         } 
         this.actionCloseDlg()
       } catch (error) {
@@ -124,7 +120,7 @@ export default {
     // this.userService = new TransportCtrl(this.$api)
     const user = this.$store.getters['ctxtStore/get']
     const lang = (user.language  === undefined) ? 'de' : user.language
-    this.screenModel = await ScreenmodelService.getScreenmodel('vue_UserMaintenanceDlg',user.language)
+    this.screenModel = await ScreenmodelService.getScreenmodel('vue_UserMaintenanceDlg',lang)
     this.ready = true
   },
   beforeDestroy () {

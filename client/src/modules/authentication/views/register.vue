@@ -70,12 +70,14 @@ export default {
         // this.$store.dispatch('setToken', response.data.token)
         // this.$store.dispatch('setUser', response.data.user)
         this.error = null
-        this.success = JSON.stringify(response.data.user.email) + ' successfully registered ' 
-        this.email = '',
-        this.password = '',
-        this.admin = false,
+        this.success = JSON.stringify(response.data.email) + ' successfully registered ' 
+        this.email = ''
+        this.password = ''
+        this.admin = false
+        const admresponse = await AuthenticationService.activeAdminUserExists()
+        this.$store.dispatch('ctxtStore/setActiveAdminUserExists',admresponse.data)
         this.$router.push({
-          name: 'register'
+          name: 'home'
         })
       } catch (error) {
         this.success = null

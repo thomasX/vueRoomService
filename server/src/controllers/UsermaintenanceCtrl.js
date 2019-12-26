@@ -1,12 +1,13 @@
 const db = require('../models/index')
 const UserBO = require('../BO/UserBO')
+const UserGBO = require('../BO/UserGBO')
 
 module.exports = {
   async getUser (req, res) {
     try {
       const id = req.params.id
-      const bo = new UserBO({ id: id })
-      const result = bo.getDTO()
+      const bo = new UserBO(db, { id: id })
+      const result = await bo.getDTO()
       if ((result) && (result !== null)) {
         const userJSON = JSON.stringify(result)
         res.send(userJSON)
@@ -22,7 +23,12 @@ module.exports = {
   async createUser (req, res) {
     try {
       // const user =
-      await db['User'].create(req.body)
+      // const bokey = req.body.bokey
+      console.log('######## kkkkk: schchchchchc ')
+      console.log('######## kkkkk: ' + JSON.stringify(req.body))
+      const dto = req.body.dto
+      const gbo = new UserGBO(db)
+      await gbo.createUser(dto)
       // const userJson = user.toJSON()
       res.send({
         // user: userJson,
@@ -36,21 +42,18 @@ module.exports = {
   },
   async updateUser (req, res) {
     try {
-      // console.log('####### req.body ###########')
-      const user = req.body
-      // console.log(JSON.stringify(user))
-      console.log('##################req.body')
-      // const updatedUser =
-      await db['User'].update(user, { where: { id: user.id } })
-      // const userJson = updatedUser.toJSON()
+      console.log('####### req.body ###########' + JSON.stringify(req.body))
+      const bokey = req.body.bokey
+      const dto = req.body.dto
+      const bo = new UserBO(db, bokey)
+      await bo.setDTO(dto)
       res.send({
-        // user: userJson,
         updated: true
       })
     } catch (err) {
       console.log(err)
       res.status(400).send({
-        error: 'This email accound doesnot exist'
+        error: 'This email account doesnot exist'
       })
     }
   }

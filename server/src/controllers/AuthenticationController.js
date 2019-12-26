@@ -12,10 +12,12 @@ function jwtSignUser (user) {
 module.exports = {
   async register (req, res) {
     try {
-      const user = await db['User'].create(req.body)
+      const dto = req.body
+      console.log('####### ooooo#####:' + JSON.stringify(dto))
+      const gbo = new UserGBO(db)
+      await gbo.createUser(dto)
       res.send({
-        user: JSON.stringify(user),
-        token: jwtSignUser(user.email)
+        email: dto.email
       })
     } catch (err) {
       res.status(400).send({
@@ -25,24 +27,22 @@ module.exports = {
   },
   async login (req, res) {
     const { email, password } = req.body
-    console.log('email: ' + email)
-    console.log('passwd: ' + password)
     const userGBO = new UserGBO(db)
-    const dto = await userGBO.login(email, password)
-    // delete dto.password
+    const userPair = await userGBO.login(email, password)
+    console.log('############# login : ' + JSON.stringify(userPair))
+    const bokey = userPair.key
+    const dto = userPair.value
+    delete dto.password
+    dto.id = bokey.id
     const token = jwtSignUser(dto)
-    console.log('token: ' + JSON.stringify(token))
-    const result = { user: dto.email, token: token }
+    const result = { user: dto, token: token }
     res.send(result)
   },
   async activeAdminUserExists (req, res) {
     try {
-      const user = await db['User'].findOne({
-        where: {
-          admin: true
-        }
-      })
-      if ((user) && (user !== null)) {
+      const gbo = new UserGBO(db)
+      const result = await gbo.activeAdminUserExists()
+      if (result === true) {
         res.send(true)
       } else {
         res.send(false)

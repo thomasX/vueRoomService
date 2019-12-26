@@ -50,7 +50,6 @@ import AuthenticationService from '@/services/AuthenticationService'
 export default {
   methods: {
     registerAllowed: function () {
-      console.log('registerAllowd?? curUserAllowed:' + curUserAllowed + '   admin:' + JSON.stringify(this.$store.state)  )
       const curUserAllowed = (this.$store.state.isUserLoggedIn && this.$store.state.user.admin)
       const noAdminUserExists= (! this.$store.state.activeAdminUsers)
       const result = (curUserAllowed || noAdminUserExists)
@@ -62,7 +61,6 @@ export default {
     },
     async checkActiveAdminUsers () {
       const response = await AuthenticationService.activeAdminUserExists()
-      console.log('#################### checkActiveAdmin:'+ JSON.stringify(response.data) + '  .... ' + JSON.stringify(this.$store.state))
       this.$store.dispatch('ctxtStore/setActiveAdminUserExists',response.data)
     },
     getHeight () {
@@ -71,7 +69,6 @@ export default {
   },
   async beforeMount () {
     await this.checkActiveAdminUsers();
-    console.log(JSON.stringify(this.$store.state))
   }
 }
 </script>

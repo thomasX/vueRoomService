@@ -63,43 +63,37 @@ export default {
       if (actionCommand === this.callbackUsermaintenanceDlg) this.actionCloseUsermaintenanceDialog(event)
     },
     async actionDelete (line) {
-      try {
       const msg = JSON.stringify(line['#lbk#'])
         await this.$util.interactionDialog.popup(this.screenmodel.translate('popupTitle'), this.screenmodel.translate(msg), 750)
         this.refreshScroll (true)
-      } catch (error) {
-        console.log('klklk')
-      }
     },
     async actionOpenUsermaintenanceDialog (line, modus) {
        this.dlgDataModel = await this.createUserMaintenanceDialogDatamodel(line, modus)
        const inValidData = ((modus === 'edit') && (this.dlgDataModel.bokey.id === 0 ))
-       alert('generiertes dlgDatamodel:  ' + JSON.stringify(this.dlgDataModel))
        if (!inValidData) this.editDialogOpened = true
     },
     async createUserMaintenanceDialogDatamodel (line, modus) {
       let result = {}
       result.modus = modus
       result.bokey =  { id: 0 }
-      result.user = {
+      result.dto = {
         admin: false
       } 
       result.createModus = (modus !== 'edit')
       if (modus !== 'create') {
         if (modus === 'edit') result.bokey = line['#lbk#']
         const response = await usermaintenanceService.read(line['#lbk#'].id)
-        result.user = response.data
+        result.dto = response.data
       }
       if (modus === 'duplicate') {
-        delete result.user.id
-        delete result.user.createdAt
-        delete result.user.updatedAt
-        delete result.user.password
+        delete result.dto.id
+        delete result.dto.createdAt
+        delete result.dto.updatedAt
+        delete result.dto.password
       } 
       return result
     },
-    actionCloseUsermaintenanceDialog (event) {
-      //console.log(JSON.stringify(event))
+    actionCloseUsermaintenanceDialog () {
       this.editDialogOpened = false
       this.refreshScroll(this.dlgDataModel.changedBokey !== undefined)
     },

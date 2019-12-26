@@ -1,9 +1,12 @@
 class AbstractBO {
   extractDtoFromModel (model, bokey) {
-    const result = model
-    for (var vkey in bokey) {
-      delete result[vkey]
-    }
+    const result = {}
+    const arrA = Object.keys(model)
+    const arrB = Object.keys(bokey)
+    const difference = arrA.filter(x => !arrB.includes(x))
+    difference.forEach(x => {
+      result[x] = model[x]
+    })
     return result
   }
 

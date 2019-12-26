@@ -1,6 +1,4 @@
 const UserBO = require('./UserBO')
-const Promise = require('bluebird')
-const bcrypt = Promise.promisifyAll(require('bcrypt'))
 
 class UserGBO {
   constructor (db) {
@@ -16,31 +14,24 @@ class UserGBO {
    */
   async login (email, passwd) {
     const userBokey = await this.findByEmail(email)
-    console.log('userbokey:' + JSON.stringify(userBokey))
     const bo = new UserBO(this.db, userBokey)
     const dto = await bo.getDTO()
-    console.log('dto:' + JSON.stringify(dto))
-    const validPasswd = await this.comparePasswd(passwd, dto.password)
-    console.log('validPWD: ' + validPasswd)
+    const validPasswd = await bo.comparePasswd(passwd, dto.password)
+    const result = { key: userBokey, value: dto }
     if (!validPasswd) throw new TypeError('ivalidUserOrPasswd')
-    return dto
+    return result
   }
 
-  async comparePasswd (plaintextPasswd, encryptedPasswd) {
-    console.log('plainText:' + plaintextPasswd)
-    console.log('encryptedPasswd:' + encryptedPasswd)
-    const match = await bcrypt.compare(plaintextPasswd, encryptedPasswd)
-    return match
+  async createUser (dto) {
+    new UserBO(this.db, { id: 0 }).create(dto)
   }
 
-  hashPassword (user) {
-    const SALT_FACTOR = 8
-    return bcrypt
-      .genSaltAsync(SALT_FACTOR)
-      .then(salt => bcrypt.hashSync(user.password, salt, null))
-      .then(hash => {
-        user.setDataValue('password', hash)
-      })
+  async activeAdminUserExists () {
+    const user = await this.pers.findOne({
+      where: { admin: true }
+    })
+    const result = ((user) && (user !== null))
+    return result
   }
 
   async findByEmail (email) {
@@ -49,7 +40,6 @@ class UserGBO {
     })
     if ((!user) || (user === null)) throw new TypeError('invalidUser')
     const result = { id: user.id }
-    console.log('result:' + JSON.stringify(result))
     return result
   }
 }

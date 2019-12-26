@@ -5,19 +5,15 @@ export default class scrollCtrl {
   }
   async getScrollModel (userCtxt, scrollRequest, screenmodel, startLine) {
     let result = undefined
-    console.log('userCtxt: ' + JSON.stringify(userCtxt))
-    console.log('scrollRequest: ' + JSON.stringify(scrollRequest))
-    console.log('screenmodel: ' + JSON.stringify(screenmodel))
-    console.log('startLine: ' + JSON.stringify(startLine))
     try {
       result = await ScrollService.getScrollModel(userCtxt, scrollRequest, screenmodel, startLine)
     } catch (error) {
       alert(error)
     }
-    console.log(result)
     return result
   }
-  async saveScrollConfig (mandCtxt, id, computedHeaders) {
+  async saveScrollConfig () {
+  // async saveScrollConfig (mandCtxt, id, computedHeaders) {
     // let configCol = []
     // computedHeaders.forEach(header => {
     //   configCol.push(header.value)
@@ -30,6 +26,6 @@ export default class scrollCtrl {
     //   configColJson: JSON.stringify(configCol)
     // }
     // await this.api.putAuthorized('keycloak/vue/scroll/saveUserScrollConfig', params)
-    console.log('saveScrollConfigNotSupported')
+    alert('saveScrollConfigNotSupported')
   }
 }

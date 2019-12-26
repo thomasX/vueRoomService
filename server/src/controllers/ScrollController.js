@@ -1,7 +1,7 @@
 const AbstractScrollBO = require('../ScrollBO/AbstractScrollBO')
 const ScrollBoFactory = require('../ScrollBO/ScrollBoFactory')
 const db = require('../models/index')
-// const { User } = require('../models')
+const UserGBO = require('../BO/UserGBO')
 
 module.exports = {
   async getScrollModel (req, res, app) {
@@ -9,11 +9,8 @@ module.exports = {
     let status = 200
     let result = {}
     try {
-      const user = await db['User'].findOne({
-        where: {
-          email: body.email
-        }
-      })
+      const gbo = new UserGBO(db)
+      const user = await gbo.findByEmail(body.email)
       const scrollBO = new ScrollBoFactory().createInstance(body.scrollRequest.scrollBO, body.scrollRequest.sort)
       const abstractScrollBO = new AbstractScrollBO(db)
       const scrollRequest = body.scrollRequest
