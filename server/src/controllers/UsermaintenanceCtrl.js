@@ -12,12 +12,10 @@ module.exports = {
         const userJSON = JSON.stringify(result)
         res.send(userJSON)
       } else {
-        throw new TypeError('undefined User')
+        throw new Error('undefined User')
       }
     } catch (err) {
-      res.status(500).send({
-        error: 'An error has occured trying to log in ' + err
-      })
+      res.status(500).send('An error has occured trying to log in ' + err)
     }
   },
   async createUser (req, res) {
@@ -27,15 +25,13 @@ module.exports = {
       const dto = req.body.dto
       const gbo = new UserGBO(db)
       await gbo.createUser(dto)
-      // const userJson = user.toJSON()
+      const userJson = JSON.stringify(dto)
       res.send({
-        // user: userJson,
+        user: userJson,
         created: true
       })
     } catch (err) {
-      res.status(400).send({
-        error: 'This email account is already in use.'
-      })
+      res.status(400).send('This email account is already in use. ' + err)
     }
   },
   async updateUser (req, res) {
@@ -48,10 +44,7 @@ module.exports = {
         updated: true
       })
     } catch (err) {
-      console.log(err)
-      res.status(400).send({
-        error: 'This email account doesnot exist'
-      })
+      res.status(400).send('This email account doesnot exist ' + err)
     }
   }
 }

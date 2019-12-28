@@ -92,11 +92,8 @@ export default class Api {
     }
     if (params !== undefined) config.params = params
     const servicePath = this.pathPrefix + service
-    let response = await axios.post(servicePath, data, config).catch(error => {
-      // const errMsg = JSON.stringify(error)
-      // console.error('Error: ' + errMsg)
-      alert(error)
-    })
+    let response = undefined
+    response = await axios.post(servicePath, data, config)
     return response
   }
 }

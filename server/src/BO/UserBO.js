@@ -35,7 +35,7 @@ class UserBO extends AbstractBO {
 
   async create (user) {
     const dto = this.extractDtoFromModel(user, this.bokey)
-    this.validateCreate(dto)
+    await this.validateCreate(dto)
     const hashedPasswd = await this.hashPassword(dto.password)
     const newModel = this.replaceBokeyInModel(user, this.bokey)
     newModel.password = hashedPasswd
@@ -58,8 +58,8 @@ class UserBO extends AbstractBO {
     return match
   }
 
-  validateCreate (dto) {
-    if (dto.password.toString === '') throw new TypeError('passwordMissing')
+  async validateCreate (dto) {
+    if ((dto.password === undefined) || (dto.password.toString === '')) throw new Error('passwordMissing')
   }
 
   async validateDTO (dto, oldDTO) {

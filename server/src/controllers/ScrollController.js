@@ -42,7 +42,7 @@ module.exports = {
       })
       result.scrollModel.CurScrollDTO.LineCollection = linecol
     } catch (error) {
-      result = 'error:' + error
+      result = { error: error }
       status = 500
     }
     res.status(status).send(result)

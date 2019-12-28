@@ -18,12 +18,12 @@ class UserGBO {
     const dto = await bo.getDTO()
     const validPasswd = await bo.comparePasswd(passwd, dto.password)
     const result = { key: userBokey, value: dto }
-    if (!validPasswd) throw new TypeError('ivalidUserOrPasswd')
+    if (!validPasswd) throw new Error('ivalidUserOrPasswd')
     return result
   }
 
   async createUser (dto) {
-    new UserBO(this.db, { id: 0 }).create(dto)
+    await new UserBO(this.db, { id: 0 }).create(dto)
   }
 
   async activeAdminUserExists () {
@@ -38,7 +38,7 @@ class UserGBO {
     const user = await this.pers.findOne({
       where: { email: email }
     })
-    if ((!user) || (user === null)) throw new TypeError('invalidUser')
+    if ((!user) || (user === null)) throw new Error('invalidUser')
     const result = { id: user.id }
     return result
   }

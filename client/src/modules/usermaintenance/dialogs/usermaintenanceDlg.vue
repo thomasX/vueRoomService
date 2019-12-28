@@ -92,7 +92,7 @@ export default {
         } 
         this.actionCloseDlg()
       } catch (error) {
-        alert('Benutzer konnte nicht gespeichert werden! [ERROR: ' + error + ']')
+        this.$util.interactionDialog.popup(this.screenModel.translate('ErrorDlgTitle'), this.screenModel.translate('cannotSaveUser') + error , 2500)
       }
     },
     async actionAbort () {

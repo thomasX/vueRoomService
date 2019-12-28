@@ -6,22 +6,23 @@ export default {
     try {
        const user = await new Api().get(`User/${bokey}`)
       return user
-    } catch {
-      return alert('user not found')
+    } catch (error) {
+      return alert('user not found' + JSON.stringify(error))
     }
   },
   async update (bokey, dto) {
     try {
-      new Api().put('User/update',undefined, { bokey: bokey , dto: dto })
+      await new Api().put('User/update',undefined, { bokey: bokey , dto: dto })
     } catch (error) {
-      return alert('user not found  ....#######.....##### ' + error)
+      throw(error.response.data)
     }
   },
   async create (bokey, dto) {
-    try {
-      return new Api().post('User/create',undefined, { bokey: bokey, dto: dto })
+    try{
+      const result =  await new Api().post('User/create',undefined, { bokey: bokey, dto: dto })
+      return result
     } catch (error) {
-      return alert('cannot save user' +error) 
+      throw(error.response.data)
     }
   }
 }
