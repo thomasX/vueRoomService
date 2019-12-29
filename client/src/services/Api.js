@@ -5,22 +5,20 @@ export default class Api {
     this.pathPrefix = process.env.VUE_APP_BASEURL
   }
   
-  // async getAuthorized (service, params, pathPrefix) {
-  //   const token = this.keycloak.token
-  //   const config = {
-  //     headers: {
-  //       'Authorization': ('Bearer ' + token),
-  //       'Access-Control-Allow-Origin': '*'
-  //     }
-  //   }
-  //   if (params !== undefined) config.params = params
-  //   const servicePath = (pathPrefix === undefined) ? (this.pathPrefix + service) : (pathPrefix + service)
-  //   const response = await axios.get(servicePath, config).catch(error => {
-  //     console.log('Error: /n' + JSON.stringify(error))
-  //   })
-  //   let result = response
-  //   return result
-  // }
+  async getAuthorized (service, params, pathPrefix) {
+    const token = this.keycloak.token
+    const config = {
+      headers: {
+        'Authorization': ('Bearer ' + token),
+        'Access-Control-Allow-Origin': '*'
+      }
+    }
+    if (params !== undefined) config.params = params
+    const servicePath = (pathPrefix === undefined) ? (this.pathPrefix + service) : (pathPrefix + service)
+    const response = await axios.get(servicePath, config)
+    let result = response
+    return result
+  }
 
   async get (service, params, pathPrefix) {
     const config = {
@@ -30,9 +28,7 @@ export default class Api {
     }
     if (params !== undefined) config.params = params
     const servicePath = (pathPrefix === undefined) ? (this.pathPrefix + service) : (pathPrefix + service)
-    const response = await axios.get(servicePath, config).catch(error => {
-      console.error('Error: /n' + JSON.stringify(error))
-    })
+    const response = await axios.get(servicePath, config)
     let result = response
     return result
   }
@@ -47,9 +43,7 @@ export default class Api {
     }
     if (params !== undefined) config.params = params
     const servicePath = this.pathPrefix + service
-    let response = await axios.put(servicePath, data, config).catch(error => {
-      console.log('Error: /n' + JSON.stringify(error))
-    })
+    let response = await axios.put(servicePath, data, config)
     return response
   }
 
@@ -66,20 +60,20 @@ export default class Api {
     return response
   }
 
-    // async postAuthorized (service, params, data) {
-  //   const token = this.keycloak.token
-  //   const config = {
-  //     headers: {
-            // "Accept": "application/json",
-            // "Content-type": "application/json"
-  //     }
-  //   }
-  //   if (params !== undefined) config.params = params
-  //   const servicePath = this.pathPrefix + service
-  //     console.log('Error: /n' + JSON.stringify(error))
-  //   })
-  //   return response
-  // }
+  async postAuthorized (service, params, data) {
+    const token = this.keycloak.token
+    const config = {
+      headers: {
+            "Accept": "application/json",
+            "Content-type": "application/json"
+      }
+    }
+    if (params !== undefined) config.params = params
+    const servicePath = this.pathPrefix + service
+    let response = undefined
+    response = await axios.post(servicePath, data, config)
+    return response
+  }
 
   async post (service, params, data) {
     const config = {
