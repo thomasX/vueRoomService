@@ -15,7 +15,7 @@ module.exports = {
         throw new Error('undefined User')
       }
     } catch (err) {
-      res.status(500).send('An error has occured trying to log in ' + err)
+      res.status(500).send('error reading user :' + err)
     }
   },
   async createUser (req, res) {
@@ -31,7 +31,7 @@ module.exports = {
         created: true
       })
     } catch (err) {
-      res.status(400).send('This email account is already in use. ' + err)
+      res.status(400).send('error creating user :' + err)
     }
   },
   async updateUser (req, res) {
@@ -40,11 +40,13 @@ module.exports = {
       const dto = req.body.dto
       const bo = new UserBO(db, bokey)
       await bo.setDTO(dto)
+      const userJson = JSON.stringify(dto)
       res.send({
+        user: userJson,
         updated: true
       })
     } catch (err) {
-      res.status(400).send('This email account doesnot exist ' + err)
+      res.status(400).send('error updating user :' + err)
     }
   }
 }

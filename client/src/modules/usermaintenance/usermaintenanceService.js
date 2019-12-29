@@ -12,7 +12,8 @@ export default {
   },
   async update (bokey, dto) {
     try {
-      await new Api().put('User/update',undefined, { bokey: bokey , dto: dto })
+      const result = await new Api().put('User/update',undefined, { bokey: bokey , dto: dto })
+      return result
     } catch (error) {
       throw(error.response.data)
     }

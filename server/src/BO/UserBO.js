@@ -65,12 +65,13 @@ class UserBO extends AbstractBO {
   async validateDTO (dto, oldDTO) {
     const curpwd = dto.password.toString()
     const oldpwd = oldDTO.password.toString()
-
+    if (!curpwd) throw new Error('missingPassword')
+    if (curpwd === undefined) throw new Error('missingPassword')
+    if (curpwd === '') throw new Error('missingPassword')
     if (curpwd !== oldpwd) {
       const hashedPassword = await this.hashPassword(dto.password)
       dto.password = hashedPassword
     }
-    console.log('validateNochNicht implementiert oldPwd:' + oldpwd + '   newPwd:' + curpwd)
   }
 
   async delete () {

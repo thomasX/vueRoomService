@@ -62,9 +62,7 @@ export default class Api {
     }
     if (params !== undefined) config.params = params
     const servicePath = this.pathPrefix + service    
-    let response = await axios.put(servicePath, data, config).catch(error => {
-      console.error('Error: /n' + JSON.stringify(error))
-    })
+    let response = await axios.put(servicePath, data, config)
     return response
   }
 
