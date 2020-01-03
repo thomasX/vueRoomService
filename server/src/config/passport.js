@@ -1,10 +1,11 @@
 const passport = require('passport')
-const { User } = require('./models')
 
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 
-const config = require('./config/config')
+const config = require('./config')
+const db = require('../models/index')
+const UserBO = require('../BO/UserBO')
 
 passport.use(
   new JwtStrategy({
@@ -12,15 +13,13 @@ passport.use(
     secretOrKey: config.authentication.jwtSecret
   }, async function (jwtPayload, done) {
     try {
-      const user = await User.findOne({
-        where: {
-          id: jwtPayload.id
-        }
-      })
-      if (!user) {
+      const bokey = { id: jwtPayload.id }
+      const bo = new UserBO(db, bokey)
+      const dto = await bo.getDTO()
+      if (!dto) {
         return done(new Error(), false)
       }
-      return done(null, user)
+      return done(null, dto)
     } catch (err) {
       return done(new Error(), false)
     }

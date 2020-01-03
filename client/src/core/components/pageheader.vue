@@ -17,7 +17,7 @@
       <v-spacer></v-spacer>
     <v-toolbar-items>
       <v-btn 
-        v-if="!$store.getters['ctxtStore/getToken']"
+        v-if="!$store.getters['ctxtStore/get']"
         text 
         dark
         :to="{
@@ -26,7 +26,7 @@
         Login
       </v-btn>
       <v-btn 
-        v-if="((!$store.getters['ctxtStore/getToken']) && (!$store.getters['ctxtStore/getActiveAdminUserExists']))"
+        v-if="((!$store.getters['ctxtStore/get']) && (!$store.getters['ctxtStore/getActiveAdminUserExists']))"
         text 
         dark
         :to="{
@@ -35,7 +35,7 @@
         Sign Up
       </v-btn>
       <v-btn 
-        v-if="$store.getters['ctxtStore/getToken']"
+        v-if="$store.getters['ctxtStore/get']"
         text 
         dark
         @click="logout">
@@ -56,7 +56,6 @@ export default {
       return result
     },  
     logout () {
-      this.$store.dispatch('ctxtStore/setToken', null)
       this.$store.dispatch('ctxtStore/set', null)
       this.$router.push({
         name: 'home'

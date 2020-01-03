@@ -1,4 +1,6 @@
 const express = require('express')
+// const path = require('path')
+const session = require('express-session')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
@@ -11,9 +13,12 @@ app.use(bodyParser.urlencoded({
   extended: true
 }))
 app.use(bodyParser.json())
+// app.use(express.static(path.join(__dirname, 'public')))
+app.use(session({ secret: 'passport-tutorial', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }))
 app.use(cors())
+require('./config/passport')
+require('./routes/api')(app)
 
-require('./routes')(app)
 sequelize.sync()
   .then(() => {
     try {

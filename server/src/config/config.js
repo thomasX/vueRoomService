@@ -11,6 +11,9 @@ module.exports = {
     }
   },
   authentication: {
-    jwtSecret: process.env.JWT_SECRET || 'secret'
+    jwtSecret: process.env.JWT_SECRET || 'secretForRoomService',
+    jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'refreshSecretForRoomService',
+    jwtLifeTime: 9,
+    jwtRefreshLifeTime: 6400
   }
 }

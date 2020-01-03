@@ -1,15 +1,22 @@
 import axios from 'axios'
+import store from '@/stores/store'
+
 
 export default class Api {
-  constructor () {
+  constructor (tokens) {
+    if (tokens) {
+      this.accessToken = tokens.accessToken
+      this.refreshToken = tokens.refreshToken
+    }
     this.pathPrefix = process.env.VUE_APP_BASEURL
   }
-  
+
   async getAuthorized (service, params, pathPrefix) {
-    const token = this.keycloak.token
+    // const token = this.keycloak.token
+
     const config = {
       headers: {
-        'Authorization': ('Bearer ' + token),
+        'Authorization': ('Bearer ' + this.accessToken),
         'Access-Control-Allow-Origin': '*'
       }
     }
@@ -34,11 +41,12 @@ export default class Api {
   }
 
   async putAuthorized (service, params, data) {
-    const token = this.keycloak.token
+    // const token = this.keycloak.token
     const config = {
       headers: {
-        'Authorization': ('Bearer ' + token),
-        'Access-Control-Allow-Origin': '*'
+        'Authorization': ('Bearer ' + this.accessToken),
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
       }
     }
     if (params !== undefined) config.params = params
@@ -61,11 +69,12 @@ export default class Api {
   }
 
   async postAuthorized (service, params, data) {
-    const token = this.keycloak.token
+    // const token = this.keycloak.token
     const config = {
       headers: {
-            "Accept": "application/json",
-            "Content-type": "application/json"
+        'Authorization': ('Bearer ' + this.accessToken),
+        'Accept': "application/json",
+        'Content-type': "application/json"
       }
     }
     if (params !== undefined) config.params = params

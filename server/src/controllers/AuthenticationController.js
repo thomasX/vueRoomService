@@ -3,10 +3,14 @@ const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 const UserGBO = require('../BO/UserGBO')
 
-function jwtSignUser (user) {
-  const ONE_WEEK = 60 * 60 * 24 * 7
-  const token = jwt.sign({ email: user.email, exp: ONE_WEEK }, config.authentication.jwtSecret)
-  return token
+function generateAccessToken (user) {
+  const accessToken = jwt.sign({ email: user.email }, config.authentication.jwtSecret, { expiresIn: config.authentication.jwtLifeTime })
+  return accessToken
+}
+
+function generateRefreshToken (user) {
+  const refreshToken = jwt.sign({ email: user.email }, config.authentication.jwtRefreshSecret, { expiresIn: config.authentication.jwtRefreshLifeTime })
+  return refreshToken
 }
 
 module.exports = {
@@ -32,8 +36,9 @@ module.exports = {
     const dto = userPair.value
     delete dto.password
     dto.id = bokey.id
-    const token = jwtSignUser(dto)
-    const result = { user: dto, token: token }
+    dto.accessToken = generateAccessToken(dto)
+    dto.refreshToken = generateRefreshToken(dto)
+    const result = { user: dto }
     res.send(result)
   },
   async activeAdminUserExists (req, res) {
