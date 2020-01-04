@@ -44,6 +44,11 @@ export default {
           email: this.email,
           password: this.password
         })
+        const userCtxt = response.data.user
+        const tokens = { accessToken: userCtxt.accessToken, refreshToken: userCtxt.refreshToken }
+        delete userCtxt.accessToken
+        delete userCtxt.refreshToken
+        this.$store.dispatch('ctxtStore/setTokens', tokens)
         this.$store.dispatch('ctxtStore/set', response.data.user)
         this.$router.push({
           name: 'reservations'

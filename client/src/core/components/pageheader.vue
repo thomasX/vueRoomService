@@ -57,6 +57,7 @@ export default {
     },  
     logout () {
       this.$store.dispatch('ctxtStore/set', null)
+      this.$store.dispatch('ctxtStore/setTokens', null)
       this.$router.push({
         name: 'home'
       })

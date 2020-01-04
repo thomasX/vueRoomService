@@ -1,12 +1,13 @@
 import ScrollService from '@/services/ScrollService'
 export default class scrollCtrl {
-  constructor (api) {
+  constructor (api, store) {
     this.api = api
+    this.store = store
   }
   async getScrollModel (userCtxt, scrollRequest, screenmodel, startLine) {
     let result = undefined
     try {
-      result = await ScrollService.getScrollModel(userCtxt, scrollRequest, screenmodel, startLine)
+      result = await ScrollService.getScrollModel(this.store, userCtxt, scrollRequest, screenmodel, startLine)
     } catch (error) {
       alert(error)
     }

@@ -3,14 +3,15 @@ import ScrollModel from '@/core/data-models/scrollmodel'
 
 export default {
 
-  async getScrollModel (userCtxt, scrollRequest, screenmodel, startLine) {
+  async getScrollModel (store, userCtxt, scrollRequest, screenmodel, startLine) {
     try {
       const params = {
         email: userCtxt.email,
         scrollRequest: scrollRequest
       }      
       if (startLine !== undefined) params.scrollRequest.start = startLine
-      const scrollResponse = await new Api(userCtxt).putAuthorized('api/scroll/ScrollModel',undefined, params )
+      console.log('########## jetz hol i des scrollmodel')
+      const scrollResponse = await new Api(store).putAuthorized('api/scroll/ScrollModel',undefined, params )
       const result = new ScrollModel(scrollResponse, screenmodel)
       return result
     } catch (error) {

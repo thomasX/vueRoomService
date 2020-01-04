@@ -3,12 +3,34 @@ import store from '@/stores/store'
 
 
 export default class Api {
-  constructor (tokens) {
-    if (tokens) {
-      this.accessToken = tokens.accessToken
-      this.refreshToken = tokens.refreshToken
+  constructor (store) {
+    if (store) {
+      this.store = store
     }
     this.pathPrefix = process.env.VUE_APP_BASEURL
+  }
+
+  getAccessToken () {
+    const tokens = this.store.getters['ctxtStore/getTokens']
+    let result = null
+    if ((tokens) && (tokens.accessToken)){
+      result = tokens.accessToken     
+    } 
+    if ((! result) || (result === null)) { 
+      throw new Error('unauthorized') 
+    }
+    return result
+  }
+
+  getRefreshToken () {
+    const tokens = this.store.getters['ctxtStore/getTokens']
+      console.log('######## tokens:' + JSON.stringify(tokens))
+      let result = null
+      if ((tokens) && (tokens.refreshToken)){
+        result = tokens.refreshToken
+      } 
+      if ((! result) || (result === null)) throw new Error('unauthorized') 
+      return result
   }
 
   async getAuthorized (service, params, pathPrefix) {
@@ -16,7 +38,7 @@ export default class Api {
 
     const config = {
       headers: {
-        'Authorization': ('Bearer ' + this.accessToken),
+        'Authorization': ('Bearer ' + this.getAccessToken()),
         'Access-Control-Allow-Origin': '*'
       }
     }
@@ -42,9 +64,11 @@ export default class Api {
 
   async putAuthorized (service, params, data) {
     // const token = this.keycloak.token
+    const accessToken = this.getAccessToken()
+    console.log('######## accessToken' + accessToken)
     const config = {
       headers: {
-        'Authorization': ('Bearer ' + this.accessToken),
+        'Authorization': ('Bearer ' + this.getAccessToken()),
         'Accept': 'application/json',
         'Content-type': 'application/json'
       }
@@ -72,7 +96,7 @@ export default class Api {
     // const token = this.keycloak.token
     const config = {
       headers: {
-        'Authorization': ('Bearer ' + this.accessToken),
+        'Authorization': ('Bearer ' + this.getAccessToken()),
         'Accept': "application/json",
         'Content-type': "application/json"
       }
