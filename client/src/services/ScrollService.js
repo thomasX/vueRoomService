@@ -10,7 +10,6 @@ export default {
         scrollRequest: scrollRequest
       }      
       if (startLine !== undefined) params.scrollRequest.start = startLine
-      console.log('########## jetz hol i des scrollmodel')
       const scrollResponse = await new Api(store).putAuthorized('api/scroll/ScrollModel',undefined, params )
       const result = new ScrollModel(scrollResponse, screenmodel)
       return result

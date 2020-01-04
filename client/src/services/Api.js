@@ -24,7 +24,6 @@ export default class Api {
 
   getRefreshToken () {
     const tokens = this.store.getters['ctxtStore/getTokens']
-      console.log('######## tokens:' + JSON.stringify(tokens))
       let result = null
       if ((tokens) && (tokens.refreshToken)){
         result = tokens.refreshToken
@@ -65,7 +64,6 @@ export default class Api {
   async putAuthorized (service, params, data) {
     // const token = this.keycloak.token
     const accessToken = this.getAccessToken()
-    console.log('######## accessToken' + accessToken)
     const config = {
       headers: {
         'Authorization': ('Bearer ' + this.getAccessToken()),
