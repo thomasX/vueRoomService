@@ -73,14 +73,12 @@ export default class JwtTokenInterceptor {
           url: refreshPath,
           data: {
             refreshToken: refreshToken 
-            // Just an example, your case may vary
           }
         })
         if (!response.data) {
           return Promise.reject(error)
         }
         this.tokenUtils.saveToken(response)
-        // save the newly refreshed token for other requests to use
         this.isAlreadyFetchingAccessToken = false
         const newToken = await this.tokenUtils.getAccessToken()
         this.onAccessTokenFetched(newToken)
