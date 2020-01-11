@@ -12,6 +12,8 @@ module.exports = (app) => {
 
   app.post('/api/user/login', auth.optional, AuthenticationController.login)
 
+  app.post('/api/user/refreshToken', auth.optional, AuthenticationController.refreshToken)
+
   app.get('/api/user/activeAdminUserExists', auth.optional, AuthenticationController.activeAdminUserExists)
 
   app.get('/api/user/:id', auth.optional, UsermaintenanceCtrl.getUser)

@@ -10,7 +10,8 @@ export default {
         scrollRequest: scrollRequest
       }      
       if (startLine !== undefined) params.scrollRequest.start = startLine
-      const scrollResponse = await new Api(store).putAuthorized('api/scroll/ScrollModel',undefined, params )
+      const aapi = new Api(store)
+      const scrollResponse = await aapi.putAuthorized('api/scroll/ScrollModel',undefined, params )
       const result = new ScrollModel(scrollResponse, screenmodel)
       return result
     } catch (error) {

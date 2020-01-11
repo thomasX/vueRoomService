@@ -2,8 +2,11 @@ const db = require('../models/index')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 const UserGBO = require('../BO/UserGBO')
+const UserBO = require('../BO/UserBO')
 
 function generateAccessToken (user) {
+  console.log('############# USer: ' + JSON.stringify(user))
+  console.log('############# USer: ' + user.email + '######')
   const accessToken = jwt.sign({ email: user.email }, config.authentication.jwtSecret, { expiresIn: config.authentication.jwtLifeTime })
   return accessToken
 }
@@ -34,6 +37,24 @@ module.exports = {
     const userPair = await userGBO.login(email, password)
     const bokey = userPair.key
     const dto = userPair.value
+    delete dto.password
+    dto.id = bokey.id
+    dto.accessToken = generateAccessToken(dto)
+    dto.refreshToken = generateRefreshToken(dto)
+    const result = { user: dto }
+    res.send(result)
+  },
+  async refreshToken (req, res) {
+    const bbb = req.body
+    console.log('################## bbb:' + JSON.stringify(bbb))
+    const refreshToken = bbb.refreshToken
+    const payload = await jwt.verify(refreshToken, config.authentication.jwtRefreshSecret)
+    console.log('###### refreshToke.email:' + JSON.stringify(payload))
+    console.log('###### refreshToken.email:' + payload.email)
+    const userGBO = new UserGBO(db)
+    const bokey = await userGBO.findByEmail(payload.email)
+    const userBO = new UserBO(db, bokey)
+    const dto = await userBO.getDTO()
     delete dto.password
     dto.id = bokey.id
     dto.accessToken = generateAccessToken(dto)

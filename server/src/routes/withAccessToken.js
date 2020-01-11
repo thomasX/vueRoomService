@@ -21,6 +21,7 @@ module.exports = (req, res, next) => {
         return res.status(401).json({ error: true, message: 'Unauthorized access.' })
       }
       req.decoded = decoded
+      console.log('###### bin im auth: decoded:' + JSON.stringify(decoded))
       next()
     })
   } else {

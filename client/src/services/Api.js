@@ -1,5 +1,5 @@
 import axios from 'axios'
-import store from '@/stores/store'
+import JwtTokenInterceptor from '@/services/JwtTokenInterceptor'
 
 
 export default class Api {
@@ -8,6 +8,18 @@ export default class Api {
       this.store = store
     }
     this.pathPrefix = process.env.VUE_APP_BASEURL
+    this.refreshTokenPath = this.pathPrefix + 'api/user/refreshToken'
+  }
+ 
+  saveToken(response) {
+    //console.log('###### saveToken:' + JSON.stringify(response))
+    const userCtxt = response.data.user
+    const tokens = { accessToken: userCtxt.accessToken, refreshToken: userCtxt.refreshToken }
+    delete userCtxt.accessToken
+    delete userCtxt.refreshToken
+    this.store.dispatch('ctxtStore/setTokens', tokens)
+    this.store.dispatch('ctxtStore/set', response.data.user)
+    return tokens.accessToken
   }
 
   getAccessToken () {
@@ -21,20 +33,26 @@ export default class Api {
     }
     return result
   }
-
+  
   getRefreshToken () {
     const tokens = this.store.getters['ctxtStore/getTokens']
-      let result = null
-      if ((tokens) && (tokens.refreshToken)){
-        result = tokens.refreshToken
-      } 
-      if ((! result) || (result === null)) throw new Error('unauthorized') 
-      return result
+    let result = null
+    if ((tokens) && (tokens.refreshToken)){
+      result = tokens.refreshToken
+    } 
+    if ((! result) || (result === null)) throw new Error('unauthorized') 
+    return result
   }
 
+
+  isTokenExpiredError (errorResponse) {
+    let result = false
+    if (errorResponse.status === 401) result = true
+    return result
+  }
+  
   async getAuthorized (service, params, pathPrefix) {
     // const token = this.keycloak.token
-
     const config = {
       headers: {
         'Authorization': ('Bearer ' + this.getAccessToken()),
@@ -43,7 +61,11 @@ export default class Api {
     }
     if (params !== undefined) config.params = params
     const servicePath = (pathPrefix === undefined) ? (this.pathPrefix + service) : (pathPrefix + service)
-    const response = await axios.get(servicePath, config)
+    const custAxios = axios.create(config)
+    // const interceptor = 
+    const interceptor = new JwtTokenInterceptor(custAxios, this, [401], this.refreshTokenPath)
+    interceptor.init(interceptor)
+    const response = await custAxios.get(servicePath)
     let result = response
     return result
   }
@@ -56,14 +78,13 @@ export default class Api {
     }
     if (params !== undefined) config.params = params
     const servicePath = (pathPrefix === undefined) ? (this.pathPrefix + service) : (pathPrefix + service)
-    const response = await axios.get(servicePath, config)
+    const custAxios = axios.create(config)
+    const response = await custAxios.get(servicePath)
     let result = response
     return result
   }
 
   async putAuthorized (service, params, data) {
-    // const token = this.keycloak.token
-    const accessToken = this.getAccessToken()
     const config = {
       headers: {
         'Authorization': ('Bearer ' + this.getAccessToken()),
@@ -72,8 +93,13 @@ export default class Api {
       }
     }
     if (params !== undefined) config.params = params
+    const custAxios = axios.create(config)
+    // const interceptor = 
+    const interceptor = new JwtTokenInterceptor(custAxios, this, [401], this.refreshTokenPath)
+    interceptor.init(interceptor)
     const servicePath = this.pathPrefix + service
-    let response = await axios.put(servicePath, data, config)
+    let response = undefined
+    response = await custAxios.put(servicePath, data)
     return response
   }
 
@@ -85,8 +111,9 @@ export default class Api {
       }
     }
     if (params !== undefined) config.params = params
+    const custAxios = axios.create(config)
     const servicePath = this.pathPrefix + service    
-    let response = await axios.put(servicePath, data, config)
+    let response = await custAxios.put(servicePath, data)
     return response
   }
 
@@ -100,9 +127,13 @@ export default class Api {
       }
     }
     if (params !== undefined) config.params = params
+    const custAxios = axios.create(config)
+    // const interceptor = 
+    const interceptor = new JwtTokenInterceptor(custAxios, this, [401], this.refreshTokenPath)
+    interceptor.init(interceptor)
     const servicePath = this.pathPrefix + service
     let response = undefined
-    response = await axios.post(servicePath, data, config)
+    response = await custAxios.post(servicePath, data)
     return response
   }
 
@@ -114,9 +145,11 @@ export default class Api {
       }
     }
     if (params !== undefined) config.params = params
+    const custAxios = axios.create(config)
+
     const servicePath = this.pathPrefix + service
     let response = undefined
-    response = await axios.post(servicePath, data, config)
+    response = await custAxios.post(servicePath, data)
     return response
   }
 }
