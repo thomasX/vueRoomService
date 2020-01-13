@@ -48,6 +48,22 @@
 <script>
 import AuthenticationService from '@/services/AuthenticationService'
 export default {
+  computed: {
+    tokens: function () {
+      const result = this.$store.getters['ctxtStore/getTokens']
+      return result
+    }
+  },
+  watch: {
+    tokens (newTokens, oldTokens) {
+      let shouldLogout 
+      if (oldTokens !== newTokens) {
+        if (!newTokens) shouldLogout = true
+        if ((newTokens) && (!newTokens.accessToken)) shouldLogout = true
+      }
+      if (shouldLogout) this.logout()
+    }
+  },
   methods: {
     registerAllowed: function () {
       const curUserAllowed = (this.$store.state.isUserLoggedIn && this.$store.state.user.admin)

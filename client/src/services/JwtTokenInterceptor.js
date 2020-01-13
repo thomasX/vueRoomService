@@ -85,6 +85,7 @@ export default class JwtTokenInterceptor {
       }
       return retryOriginalRequest
     } catch (err) {
+      if (err.response.status === 401) this.tokenUtils.saveToken()
       return Promise.reject(err)
     }
   }

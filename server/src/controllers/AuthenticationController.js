@@ -45,22 +45,25 @@ module.exports = {
     res.send(result)
   },
   async refreshToken (req, res) {
-    const bbb = req.body
-    console.log('################## bbb:' + JSON.stringify(bbb))
-    const refreshToken = bbb.refreshToken
-    const payload = await jwt.verify(refreshToken, config.authentication.jwtRefreshSecret)
-    console.log('###### refreshToke.email:' + JSON.stringify(payload))
-    console.log('###### refreshToken.email:' + payload.email)
-    const userGBO = new UserGBO(db)
-    const bokey = await userGBO.findByEmail(payload.email)
-    const userBO = new UserBO(db, bokey)
-    const dto = await userBO.getDTO()
-    delete dto.password
-    dto.id = bokey.id
-    dto.accessToken = generateAccessToken(dto)
-    dto.refreshToken = generateRefreshToken(dto)
-    const result = { user: dto }
-    res.send(result)
+    try {
+      const bbb = req.body
+      const refreshToken = bbb.refreshToken
+      const payload = await jwt.verify(refreshToken, config.authentication.jwtRefreshSecret)
+      const userGBO = new UserGBO(db)
+      const bokey = await userGBO.findByEmail(payload.email)
+      const userBO = new UserBO(db, bokey)
+      const dto = await userBO.getDTO()
+      delete dto.password
+      dto.id = bokey.id
+      dto.accessToken = generateAccessToken(dto)
+      dto.refreshToken = generateRefreshToken(dto)
+      const result = { user: dto }
+      res.send(result)
+    } catch (err) {
+      res.status(401).send({
+        error: 'An error has occured trying to refresh token'
+      })
+    }
   },
   async activeAdminUserExists (req, res) {
     try {

@@ -13,13 +13,15 @@ export default class Api {
  
   saveToken(response) {
     //console.log('###### saveToken:' + JSON.stringify(response))
-    const userCtxt = response.data.user
-    const tokens = { accessToken: userCtxt.accessToken, refreshToken: userCtxt.refreshToken }
-    delete userCtxt.accessToken
-    delete userCtxt.refreshToken
+    let tokens = { accessToken: undefined, refreshToken: undefined }
+    if (response) {
+      const userCtxt = response.data.user
+      tokens = { accessToken: userCtxt.accessToken, refreshToken: userCtxt.refreshToken }
+      delete userCtxt.accessToken
+      delete userCtxt.refreshToken
+      this.store.dispatch('ctxtStore/set', response.data.user)
+    }
     this.store.dispatch('ctxtStore/setTokens', tokens)
-    this.store.dispatch('ctxtStore/set', response.data.user)
-    return tokens.accessToken
   }
 
   getAccessToken () {
