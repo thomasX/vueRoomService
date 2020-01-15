@@ -5,8 +5,6 @@ const UserGBO = require('../BO/UserGBO')
 const UserBO = require('../BO/UserBO')
 
 function generateAccessToken (user) {
-  console.log('############# USer: ' + JSON.stringify(user))
-  console.log('############# USer: ' + user.email + '######')
   const accessToken = jwt.sign({ email: user.email }, config.authentication.jwtSecret, { expiresIn: config.authentication.jwtLifeTime })
   return accessToken
 }

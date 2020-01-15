@@ -36,8 +36,11 @@ module.exports = {
   },
   async updateUser (req, res) {
     try {
+      console.log('############UUUUUUUU# req.body')
+      console.log('############UUUUUUUU# req.body' + JSON.stringify(req.body))
       const bokey = req.body.bokey
       const dto = req.body.dto
+
       const bo = new UserBO(db, bokey)
       await bo.setDTO(dto)
       const userJson = JSON.stringify(dto)
