@@ -1,5 +1,5 @@
 const auth = require('../auth')
-const scrollCtrl = require('../../controllers/ScrollController')
+const scrollSrvCtrl = require('../../serverController/ScrollSrvCtrl')
 module.exports = (app) => {
-  app.put('/api/scroll/ScrollModel', auth.required, scrollCtrl.getScrollModel)
+  app.put('/api/scroll/ScrollModel', auth.required, scrollSrvCtrl.getScrollModel)
 }

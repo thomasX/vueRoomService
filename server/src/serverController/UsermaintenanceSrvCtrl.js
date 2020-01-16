@@ -20,8 +20,6 @@ module.exports = {
   },
   async createUser (req, res) {
     try {
-      // const user =
-      // const bokey = req.body.bokey
       const dto = req.body.dto
       const gbo = new UserGBO(db)
       await gbo.createUser(dto)
@@ -36,8 +34,6 @@ module.exports = {
   },
   async updateUser (req, res) {
     try {
-      console.log('############UUUUUUUU# req.body')
-      console.log('############UUUUUUUU# req.body' + JSON.stringify(req.body))
       const bokey = req.body.bokey
       const dto = req.body.dto
 
