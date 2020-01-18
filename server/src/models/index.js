@@ -1,7 +1,11 @@
 const fs = require('fs')
 const path = require('path')
-const Sequelize = require('sequelize')
+const cls = require('cls-hooked')
 const config = require('../config/config')
+const namespace = cls.createNamespace(config.db.transactionNamespace)
+const Sequelize = require('sequelize')
+Sequelize.useCLS(namespace)
+
 const db = {}
 const options = config.db.options
 options.isolationLevel = Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE

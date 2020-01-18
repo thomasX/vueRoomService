@@ -10,6 +10,8 @@ module.exports = (app) => {
 
   app.put('/api/user/update', auth.required, UsermaintenanceSrvCtrl.updateUser)
 
+  app.put('/api/user/delete', auth.required, UsermaintenanceSrvCtrl.deleteUser)
+
   app.post('/api/user/login', auth.optional, AuthenticationSrvCtrl.login)
 
   app.post('/api/user/refreshToken', auth.optional, AuthenticationSrvCtrl.refreshToken)

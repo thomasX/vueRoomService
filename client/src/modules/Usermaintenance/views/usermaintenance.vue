@@ -64,13 +64,19 @@ export default {
     },
     async actionDelete (line) {
       const msg = JSON.stringify(line['#lbk#'])
-        await this.$util.interactionDialog.popup(this.screenmodel.translate('popupTitle'), this.screenmodel.translate(msg), 750)
-        this.refreshScroll (true)
+      const popupMsg = this.screenmodel.translate('DeleteUser?(Y/N)') + msg
+      try {
+        await this.$util.interactionDialog.checkYesNoDialog(this.screenmodel.translate('yesNoTitle'), popupMsg, 750)
+        await usermaintenanceService.delete(this.$store, line['#lbk#'])
+      } catch (error) {
+        this.$util.interactionDialog.popup(this.screenmodel.translate('ErrorDlgTitle'), this.screenmodel.translate('cannotDeleteUser') + error , 2500)
+      }
+      this.refreshScroll (true)
     },
     async actionOpenUsermaintenanceDialog (line, modus) {
-       this.dlgDataModel = await this.createUserMaintenanceDialogDatamodel(line, modus)
-       const inValidData = ((modus === 'edit') && (this.dlgDataModel.bokey.id === 0 ))
-       if (!inValidData) this.editDialogOpened = true
+      this.dlgDataModel = await this.createUserMaintenanceDialogDatamodel(line, modus)
+      const inValidData = ((modus === 'edit') && (this.dlgDataModel.bokey.id === 0 ))
+      if (!inValidData) this.editDialogOpened = true
     },
     async createUserMaintenanceDialogDatamodel (line, modus) {
       let result = {}

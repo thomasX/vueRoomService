@@ -7,7 +7,15 @@ export default {
        const user = await new Api().get(`api/user/${bokey}`)
       return user
     } catch (error) {
-      return alert('user not found' + JSON.stringify(error))
+      throw(error.response.data)
+    }
+  },
+  async delete (store, bokey) {
+    try {
+       const user = await new Api(store).putAuthorized('api/user/delete', undefined,{ bokey: bokey })
+      return user
+    } catch (error) {
+      throw(error.response.data)
     }
   },
   async update (store, bokey, dto) {
