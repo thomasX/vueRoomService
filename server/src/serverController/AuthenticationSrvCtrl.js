@@ -17,23 +17,23 @@ function generateRefreshToken (user) {
 module.exports = {
   async register (req, res) {
     try {
-      db.sequelize.transaction(async function (t) {
+      await db.sequelize.transaction(async function (t) {
         const dto = req.body
         const gbo = new UserGBO(db)
+        const activeExists = gbo.activeAdminUserExists()
+        if ((activeExists) && (activeExists.id !== 0)) throw new Error('aktiveAdminAccountIsAlreadyCreated')
         await gbo.createUser(dto)
         res.send({
           email: dto.email
         })
       })
     } catch (err) {
-      res.status(400).send({
-        error: 'This email account is already in use.'
-      })
+      res.status(400).send('ActiveAdminAccountAlreadyExists')
     }
   },
   async login (req, res) {
     try {
-      db.sequelize.transaction(async function (t) {
+      await db.sequelize.transaction(async function (t) {
         const { email, password } = req.body
         const userGBO = new UserGBO(db)
         const userPair = await userGBO.login(email, password)
@@ -52,7 +52,7 @@ module.exports = {
   },
   async refreshToken (req, res) {
     try {
-      db.sequelize.transaction(async function (t) {
+      await db.sequelize.transaction(async function (t) {
         const bbb = req.body
         const refreshToken = bbb.refreshToken
         const payload = await jwt.verify(refreshToken, config.authentication.jwtRefreshSecret)
@@ -68,9 +68,7 @@ module.exports = {
         res.send(result)
       })
     } catch (err) {
-      res.status(401).send({
-        error: 'An error has occured trying to refresh token'
-      })
+      res.status(401).send('An error has occured trying to refresh token')
     }
   },
   async activeAdminUserExists (req, res) {
@@ -83,9 +81,7 @@ module.exports = {
         res.send(false)
       }
     } catch (err) {
-      res.status(500).send({
-        error: 'An error has occured trying to log in'
-      })
+      res.status(500).send('An error has occured trying to log in')
     }
   }
 }

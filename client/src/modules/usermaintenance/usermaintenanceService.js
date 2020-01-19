@@ -33,5 +33,12 @@ export default {
     } catch (error) {
       throw(error.response.data)
     }
+  },
+  async registerUser (store, bokey, dto) {
+    try{
+      await new Api().post('api/user/register',undefined, dto)
+    } catch (error) {
+      throw(error.response.data)
+    }
   }
 }

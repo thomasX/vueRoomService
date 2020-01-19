@@ -86,7 +86,11 @@ export default {
     async actionSave () {
       try {
         if (this.dataModel.createModus) {
-          await usermaintenanceService.create(this.$store,this.dataModel.bokey, this.dataModel.dto)
+          if (this.dataModel.modus === 'register') {
+            await usermaintenanceService.registerUser(this.$store,this.dataModel.bokey, this.dataModel.dto)
+          } else {
+            await usermaintenanceService.create(this.$store,this.dataModel.bokey, this.dataModel.dto)
+          }
         } else {
           await usermaintenanceService.update(this.$store,this.dataModel.bokey, this.dataModel.dto)
         } 
@@ -119,7 +123,7 @@ export default {
     window.addEventListener('resize', this.checkMobile)
     // this.userService = new TransportCtrl(this.$api)
     const user = this.$store.getters['ctxtStore/get']
-    const lang = (user.language  === undefined) ? 'de' : user.language
+    const lang = (!user) || (user.language  === undefined) ? 'de' : user.language
     this.screenModel = await ScreenmodelService.getScreenmodel('vue_UserMaintenanceDlg',lang)
     this.ready = true
   },

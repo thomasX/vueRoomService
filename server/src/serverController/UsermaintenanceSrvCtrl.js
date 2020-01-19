@@ -5,7 +5,7 @@ const UserGBO = require('../BO/UserGBO')
 module.exports = {
   async getUser (req, res) {
     try {
-      db.sequelize.transaction(async function (t) {
+      await db.sequelize.transaction(async function (t) {
         const id = req.params.id
         const bo = new UserBO(db, { id: id })
         const result = await bo.getDTO()
@@ -22,7 +22,7 @@ module.exports = {
   },
   async createUser (req, res) {
     try {
-      db.sequelize.transaction(async function (t) {
+      await db.sequelize.transaction(async function (t) {
         const dto = req.body.dto
         const gbo = new UserGBO(db)
         await gbo.createUser(dto)
@@ -38,7 +38,7 @@ module.exports = {
   },
   async deleteUser (req, res) {
     try {
-      db.sequelize.transaction(async function (t) {
+      await db.sequelize.transaction(async function (t) {
         const bokey = req.body.bokey
         const dto = req.body.dto
 
@@ -56,7 +56,7 @@ module.exports = {
   },
   async updateUser (req, res) {
     try {
-      db.sequelize.transaction(async function (t) {
+      await db.sequelize.transaction(async function (t) {
         const bokey = req.body.bokey
         const dto = req.body.dto
 

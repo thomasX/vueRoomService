@@ -1,98 +1,46 @@
 <template>
-  <v-layout column>
-    <v-flex xs6 offset-xs3>
-      <panel title="Register">
-        <form 
-          name="tab-tracker-form"
-          autocomplete="off">
-          <v-text-field
-            label="Email"
-            v-model="email"
-          ></v-text-field>
-          <br>
-          <v-text-field
-            label="Password"
-            type="password"
-            v-model="password"
-            autocomplete="new-password"
-          ></v-text-field>
-          <br>
-          <v-checkbox
-            v-model="admin"
-            label="Admin"
-          ></v-checkbox>
-          <v-text-field
-            label="Language"
-            type="text"
-            v-model="language"
-          ></v-text-field>
-        </form>
-        <br>
-        <div class="danger-alert" v-html="error" />
-        <br>
-        <div class="success" v-html="success" />
-        <br>
-        <v-btn
-          dark
-          color="primary" 
-          @click="register">
-          Register
-        </v-btn>
-      </panel>
-    </v-flex>
-  </v-layout>
+    <div>
+        <v-progress-circular v-if="!ready" indeterminate color="primary"/>
+        <UserMaintenanceDialog v-if="(ready && dlgOpened)" @handleEvent="handleEvent" :screenmodel="screenmodel" :dataModel="dlgDataModel" :callbackActionCommand="callbackUsermaintenanceDlg"/>
+    </div>
 </template>
 
 <script>
-import AuthenticationService from '@/services/AuthenticationService'
+import UserMaintenanceDialog from '@/modules/Usermaintenance/dialogs/usermaintenanceDlg.vue'
 
 export default {
-  data () {
+  name: 'user-logon',
+  components: {
+    UserMaintenanceDialog
+  },
+  data: () =>{
     return {
-      email: '',
-      password: '',
-      admin: false,
-      language: 'de',
-      error: null,
-      success: null
+      ready: true,
+      dlgOpened: true,
+      screenmodel: {},
+      callbackUsermaintenanceDlg: 'actionCloseDialog',
+      dlgDataModel: { 
+        modus: 'register',
+        bokey: { id: 0 },
+        dto: { admin: false },
+        createModus: true }
     }
   },
   methods: {
-    async register () {
-      try {
-        // const response = await AuthenticationService.register(
-        const response = await AuthenticationService.register({
-          email: this.email,
-          password: this.password,
-          admin: this.admin,
-          language: this.language
-        })
-        // this.$store.dispatch('setToken', response.data.token)
-        // this.$store.dispatch('setUser', response.data.user)
-        this.error = null
-        this.success = JSON.stringify(response.data.email) + ' successfully registered ' 
-        this.email = ''
-        this.password = ''
-        this.admin = false
-        const admresponse = await AuthenticationService.activeAdminUserExists()
-        this.$store.dispatch('ctxtStore/setActiveAdminUserExists',admresponse.data)
-        this.$router.push({
-          name: 'home'
-        })
-      } catch (error) {
-        this.success = null
-        this.error = (error.response) ? error.response.data.error : 'no response from API-Server'
-      }
+    handleEvent (actionCommand, data, selectedLine) {
+      console.log('actionCommand received:jjj' + actionCommand)
+      if (actionCommand === 'actionCloseDialog') this.actionCloseDialog()
+    },
+    actionCloseDialog () {
+      this.$router.push({
+        name: 'home'
+      })
     }
   }
+
 }
 </script>
 
-<style scoped>
-.danger-alert{
-  color: crimson
-}
-.success{
-  color: darkgreen
-}
+<style>
+
 </style>
