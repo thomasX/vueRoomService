@@ -1,68 +1,37 @@
 <template>
-  <v-layout column>
-    <v-flex xs6 offset-xs3>
-      <panel title="Login">
-        <v-text-field
-          label="Email"
-          v-model="email"
-        ></v-text-field>
-        <br>
-        <v-text-field
-          label="Password"
-          type="password"
-          v-model="password"
-        ></v-text-field>
-        <br>
-        <div class="danger-alert" v-html="error" />
-        <br>
-        <v-btn
-          dark
-          color="primary" 
-          @click="login">
-          Login
-        </v-btn>
-      </panel>
-    </v-flex>
-  </v-layout>
+    <div>
+        <v-progress-circular v-if="!ready" indeterminate color="primary"/>
+        <LoginDialog v-if="ready && dlgOpened" @handleEvent="handleEvent" :screenmodel="screenmodel" :dataModel="dlgDataModel" :callbackActionCommand="callbackLoginDlg"/>
+    </div>
 </template>
 
 <script>
-import AuthenticationService from '@/services/AuthenticationService'
+import LoginDialog from '@/modules/authentication/views/dialogs/loginDlg.vue'
 
 export default {
-  data () {
+  name: 'user-logon',
+  components: {
+    LoginDialog
+  },
+  data: () =>{
     return {
-      email: '',
-      password: '',
-      error: null
+      ready: true,
+      dlgOpened: true,
+      screenmodel: {},
+      callbackLoginDlg: 'actionCloseDialog',
+      dlgDataModel: { email: '', password: '', bokey: { id: '' } }
     }
   },
   methods: {
-    async login () {
-      try {
-        const response = await AuthenticationService.login({
-          email: this.email,
-          password: this.password
-        })
-        const userCtxt = response.data.user
-        const tokens = { accessToken: userCtxt.accessToken, refreshToken: userCtxt.refreshToken }
-        delete userCtxt.accessToken
-        delete userCtxt.refreshToken
-        this.$store.dispatch('ctxtStore/setTokens', tokens)
-        this.$store.dispatch('ctxtStore/set', response.data.user)
-        this.$router.push({
-          name: 'reservations'
-        })
-      } catch (error) {
-        this.error = (error.response) ? error.response.data.error : 'no response from API-Server'
-      }
-    }
+    handleEvent (actionCommand, data, selectedLine) {
+      console.log('actionCommand received:' + actionCommand)
+    },
+    actionCloseDialog () {}
   }
+
 }
 </script>
 
-<style scoped>
-.danger-alert{
-  color: crimson
-}
+<style>
+
 </style>

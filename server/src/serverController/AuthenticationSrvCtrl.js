@@ -32,19 +32,23 @@ module.exports = {
     }
   },
   async login (req, res) {
-    db.sequelize.transaction(async function (t) {
-      const { email, password } = req.body
-      const userGBO = new UserGBO(db)
-      const userPair = await userGBO.login(email, password)
-      const bokey = userPair.key
-      const dto = userPair.value
-      delete dto.password
-      dto.id = bokey.id
-      dto.accessToken = generateAccessToken(dto)
-      dto.refreshToken = generateRefreshToken(dto)
-      const result = { user: dto }
-      res.send(result)
-    })
+    try {
+      db.sequelize.transaction(async function (t) {
+        const { email, password } = req.body
+        const userGBO = new UserGBO(db)
+        const userPair = await userGBO.login(email, password)
+        const bokey = userPair.key
+        const dto = userPair.value
+        delete dto.password
+        dto.id = bokey.id
+        dto.accessToken = generateAccessToken(dto)
+        dto.refreshToken = generateRefreshToken(dto)
+        const result = { user: dto }
+        res.send(result)
+      })
+    } catch (err) {
+      res.status(403).send('error logon failed')
+    }
   },
   async refreshToken (req, res) {
     try {
